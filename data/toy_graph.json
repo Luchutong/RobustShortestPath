@@ -1,0 +1,79 @@
+{
+  "n": 6,
+  "terminal": 5,
+  "nodes": [
+    {
+      "id": 0,
+      "actions": [
+        {
+          "action_id": 0,
+          "name": "fast_risky",
+          "successors": [
+            {"to": 1, "cost": 1.0},
+            {"to": 2, "cost": 1.0}
+          ]
+        },
+        {
+          "action_id": 1,
+          "name": "safe",
+          "successors": [
+            {"to": 3, "cost": 3.0}
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "actions": [
+        {
+          "action_id": 0,
+          "name": "finish",
+          "successors": [
+            {"to": 5, "cost": 1.0}
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "actions": [
+        {
+          "action_id": 0,
+          "name": "trap_route",
+          "successors": [
+            {"to": 4, "cost": 1.0}
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "actions": [
+        {
+          "action_id": 0,
+          "name": "safe_finish",
+          "successors": [
+            {"to": 5, "cost": 4.0}
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "actions": [
+        {
+          "action_id": 0,
+          "name": "expensive_finish",
+          "successors": [
+            {"to": 5, "cost": 100.0}
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "actions": []
+    }
+  ]
+}
+
