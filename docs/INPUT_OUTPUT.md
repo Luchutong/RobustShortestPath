@@ -101,6 +101,9 @@ toy_graph,6,6,7,vi,0.052000,4,1,42.600000,1
 ./build/rsp_main --input data/toy_graph.txt --algorithm pi --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm dijkstra --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm exhaustive --output results
+./build/rsp_main --input data/toy_graph.txt --algorithm baseline_nominal --output results
+./build/rsp_main --input data/toy_graph.txt --algorithm baseline_bestcase --output results
+./build/rsp_main --input data/toy_graph.txt --algorithm baseline_worst_immediate --output results
 ```
 
 可选参数：
@@ -118,5 +121,7 @@ vi
 pi
 dijkstra
 exhaustive
+baseline_nominal
+baseline_bestcase
+baseline_worst_immediate
 ```
-

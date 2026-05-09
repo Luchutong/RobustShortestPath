@@ -297,3 +297,84 @@ void append_runtime_csv(...);
 
 输出字段见 [INPUT_OUTPUT.md](INPUT_OUTPUT.md)。
 
+## 11. 统一运行接口
+
+头文件：`include/rsp/runner.hpp`
+
+这是实验 1、实验 3、实验 4 的统一调用入口。命令行程序 `rsp_main` 也通过它分发算法。
+
+```cpp
+enum class AlgorithmKind {
+    Core,
+    Baseline
+};
+
+struct AlgorithmOptions {
+    double epsilon = 1e-9;
+    int max_iter = 100000;
+    bool init_with_inf = true;
+    bool save_history = true;
+};
+
+struct AlgorithmRunResult {
+    std::string name;
+    AlgorithmKind kind;
+    std::vector<double> value;
+    std::vector<int> policy;
+    std::vector<double> residual_history;
+    int iterations;
+    bool converged;
+    bool success;
+};
+
+std::vector<std::string> core_algorithm_names();
+std::vector<std::string> baseline_algorithm_names();
+std::vector<std::string> all_algorithm_names();
+
+AlgorithmRunResult run_algorithm(
+    const RobustGraph& graph,
+    const std::string& algorithm_name,
+    const AlgorithmOptions& options = {}
+);
+```
+
+当前注册的算法名：
+
+| 算法名 | 类型 | 负责人 | 调用的底层接口 |
+| --- | --- | --- | --- |
+| `vi` | core | lct | `value_iteration` |
+| `dijkstra` | core | hhm | `dijkstra_like` |
+| `pi` | core | csy | `policy_iteration` |
+| `exhaustive` | baseline / ground truth | lct | `exhaustive_search` |
+| `baseline_nominal` | baseline | hhm | `deterministic_dijkstra_baseline(..., Nominal)` |
+| `baseline_bestcase` | baseline | hhm | `deterministic_dijkstra_baseline(..., BestCase)` |
+| `baseline_worst_immediate` | baseline | hhm | `deterministic_dijkstra_baseline(..., WorstImmediate)` |
+
+新增算法注册流程：
+
+1. 在对应 `include/rsp/*.hpp` 声明公开函数与结果结构。
+2. 在 `src/*.cpp` 实现。
+3. 在 `src/runner.cpp` 的 `run_algorithm` 中添加算法名分支。
+4. 更新本文件和 README 的算法表。
+
+## 12. 实验接口对应关系
+
+实验 1 Toy Example：
+
+- 输入：`data/toy_graph.txt`
+- 核心算法：`vi`, `dijkstra`, `pi`, `exhaustive`
+- baseline：`baseline_nominal`
+- 输出：`values.csv`, `policies.csv`, `runtime.csv`
+
+实验 3 中规模效率比较：
+
+- 输入：`data/random_graphs/*.txt`
+- 核心算法：`vi`, `pi`, `dijkstra`
+- 统一指标：`runtime_ms`, `iterations`, `converged`, `success`, `avg_value`
+
+实验 4 鲁棒性对比：
+
+- robust policy：优先用 `vi`
+- deterministic policy：`baseline_nominal`, `baseline_bestcase`, `baseline_worst_immediate`
+- 评估接口：`adversarial_rollout`
+- 建议输出：`graph_id,s,policy_type,start_node,worst_cost,terminated,steps`

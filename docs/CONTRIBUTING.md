@@ -7,6 +7,8 @@ main
 feature/vi
 feature/pi
 feature/dijkstra
+feature/baseline-dijkstra
+feature/exhaustive
 feature/experiments
 feature/visualization
 docs/report
@@ -43,25 +45,25 @@ docs/INPUT_OUTPUT.md
 - 新算法应返回结果结构体，不直接打印。
 - C++ 负责生成 CSV/JSON，Python 只读取结果并画图。
 
-## 推荐任务拆分
+## 当前任务拆分
 
-成员 A：
+hhm：
 
-- 完成 `report/theory_notes.md`
-- 完成 `report/proof_section.md`
-- 补充 README 中的问题定义和算法说明
+- Dijkstra-like Algorithm：`include/rsp/dijkstra_like.hpp`, `src/dijkstra_like.cpp`
+- Baseline 1 deterministic Dijkstra：`include/rsp/baseline.hpp`, `src/baseline.cpp`
+- 实验四中的 deterministic baseline policy 和 adversarial rollout 对比数据
 
-成员 B：
+lct：
 
-- 强化 `policy_iteration`
-- 实现 optimized Dijkstra-like
-- 完成更多单元测试
-- 实现 deterministic Dijkstra baselines
+- Value Iteration：`include/rsp/value_iteration.hpp`, `src/value_iteration.cpp`
+- Baseline 2 exhaustive search：`include/rsp/exhaustive_search.hpp`, `src/exhaustive_search.cpp`
+- 实验四中的 robust VI policy 和对比数据
 
-成员 C：
+csy：
 
-- 实现 layered random graph generator
-- 编写批量实验脚本
-- 生成 correctness/runtime/robustness 图表
-- 整理报告图片
+- 剩余核心内容：Policy Iteration、proper policy、IO、runner、批量实验脚本
+- 实验一 toy example 汇总
+- 实验三中规模效率比较
+- 报告、可视化和最终整合
 
+所有成员新增算法或 baseline 后，都要在 `src/runner.cpp` 注册算法名，并同步更新 `README.md` 与 `docs/API.md`。

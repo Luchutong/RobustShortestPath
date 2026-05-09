@@ -14,6 +14,7 @@ add_library(rsp
     src/dijkstra_like.cpp
     src/exhaustive_search.cpp
     src/baseline.cpp
+    src/runner.cpp
     src/io.cpp
 )
 
