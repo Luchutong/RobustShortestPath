@@ -18,7 +18,27 @@
 
 1. `run_toy.sh`: 跑实验 1 的 toy graph。
 2. `run_runtime.sh`: 跑实验 3 的中规模图。
-3. `run_robustness.sh`: 跑实验 4 的鲁棒性对比。
+3. `run_robustness`: C++ 入口，跑实验 4 的鲁棒性对比。
 4. `generate_graph.cpp` 或 Python 生成 layered graph，保证存在 proper policy。
 
 所有实验输出统一写入 `results/`。
+
+实验 4 当前命令：
+
+```bash
+./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
+```
+
+如果实验图的 successor set size 是外部控制变量，可以显式传入：
+
+```bash
+./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20 --s 2
+```
+
+不传 `--s` 时，程序默认使用图中最大 successor set size。
+
+输出 `results/robustness.csv`：
+
+```csv
+graph_id,s,policy_type,start_node,worst_cost,terminated,steps
+```

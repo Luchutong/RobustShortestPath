@@ -26,6 +26,7 @@ ctest --test-dir build --output-on-failure
 ./build/rsp_main --input data/toy_graph.txt --algorithm pi --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm exhaustive --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm baseline_nominal --output results
+./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
 ```
 
 输出统一写到：
@@ -262,6 +263,20 @@ baseline_bestcase
 baseline_worst_immediate
 vi
 ```
+
+命令：
+
+```bash
+./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
+```
+
+如果批量实验中 `s` 是图生成器控制的实验参数，可以显式传入：
+
+```bash
+./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20 --s 2
+```
+
+不传 `--s` 时，程序默认使用图中最大 successor set size。
 
 结果建议输出：
 

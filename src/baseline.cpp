@@ -4,7 +4,92 @@
 #include "rsp/proper_policy.hpp"
 #include "rsp/utils.hpp"
 
+#include <cmath>
+#include <functional>
+#include <queue>
+#include <vector>
+
 namespace rsp {
+namespace {
+
+struct DeterministicEdge {
+    int from = -1;
+    int to = -1;
+    int action = -1;
+    double cost = 0.0;
+};
+
+bool has_negative_transition_cost(const RobustGraph& graph) {
+    for (const auto& node : graph.nodes) {
+        for (const auto& action : node.actions) {
+            for (const auto& tr : action.trans) {
+                if (tr.cost < -EPS) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+Transition worst_immediate_successor(const Action& action) {
+    Transition chosen = action.trans.front();
+    for (const auto& tr : action.trans) {
+        if (tr.cost > chosen.cost + EPS ||
+            (std::abs(tr.cost - chosen.cost) <= EPS && tr.to < chosen.to)) {
+            chosen = tr;
+        }
+    }
+    return chosen;
+}
+
+std::vector<DeterministicEdge> build_deterministic_edges(
+    const RobustGraph& graph,
+    DeterministicMode mode
+) {
+    std::vector<DeterministicEdge> edges;
+    for (int x = 0; x < graph.n; ++x) {
+        if (graph.is_terminal(x)) {
+            continue;
+        }
+        for (int a = 0; a < static_cast<int>(graph.nodes[x].actions.size()); ++a) {
+            const auto& action = graph.nodes[x].actions[a];
+            if (mode == DeterministicMode::BestCase) {
+                for (const auto& tr : action.trans) {
+                    edges.push_back({x, tr.to, a, tr.cost});
+                }
+            } else if (mode == DeterministicMode::WorstImmediate) {
+                const auto tr = worst_immediate_successor(action);
+                edges.push_back({x, tr.to, a, tr.cost});
+            } else {
+                const auto& tr = action.trans.front();
+                edges.push_back({x, tr.to, a, tr.cost});
+            }
+        }
+    }
+    return edges;
+}
+
+bool better_shortest_path_choice(
+    double candidate,
+    const DeterministicEdge& edge,
+    double best_distance,
+    int best_action,
+    int best_next
+) {
+    if (less_with_eps(candidate, best_distance)) {
+        return true;
+    }
+    if (std::abs(candidate - best_distance) > EPS) {
+        return false;
+    }
+    if (best_action < 0 || edge.action < best_action) {
+        return true;
+    }
+    return edge.action == best_action && edge.to < best_next;
+}
+
+}  // namespace
 
 BaselineResult deterministic_dijkstra_baseline(
     const RobustGraph& graph,
@@ -14,39 +99,38 @@ BaselineResult deterministic_dijkstra_baseline(
     BaselineResult result;
     result.policy.assign(graph.n, -1);
     result.value.assign(graph.n, INF);
+    if (has_negative_transition_cost(graph)) {
+        return result;
+    }
 
-    for (int x = 0; x < graph.n; ++x) {
-        if (graph.is_terminal(x)) {
+    std::vector<std::vector<DeterministicEdge>> incoming(graph.n);
+    for (const auto& edge : build_deterministic_edges(graph, mode)) {
+        incoming[edge.to].push_back(edge);
+    }
+
+    std::vector<int> best_next(graph.n, -1);
+    using QueueItem = std::pair<double, int>;
+    std::priority_queue<QueueItem, std::vector<QueueItem>, std::greater<QueueItem>> pq;
+    result.value[graph.terminal] = 0.0;
+    pq.push({0.0, graph.terminal});
+
+    while (!pq.empty()) {
+        const auto [dist, node] = pq.top();
+        pq.pop();
+        if (std::abs(dist - result.value[node]) > EPS) {
             continue;
         }
-
-        double best_score = INF;
-        int best_action = 0;
-        for (int a = 0; a < static_cast<int>(graph.nodes[x].actions.size()); ++a) {
-            const auto& action = graph.nodes[x].actions[a];
-            double score = INF;
-            if (mode == DeterministicMode::Nominal) {
-                score = action.trans.front().cost;
-            } else if (mode == DeterministicMode::BestCase) {
-                for (const auto& tr : action.trans) {
-                    if (less_with_eps(tr.cost, score)) {
-                        score = tr.cost;
-                    }
-                }
-            } else {
-                score = -INF;
-                for (const auto& tr : action.trans) {
-                    if (tr.cost > score) {
-                        score = tr.cost;
-                    }
-                }
-            }
-            if (less_with_eps(score, best_score)) {
-                best_score = score;
-                best_action = a;
+        for (const auto& edge : incoming[node]) {
+            const double candidate = safe_add(edge.cost, dist);
+            if (better_shortest_path_choice(
+                    candidate, edge, result.value[edge.from],
+                    result.policy[edge.from], best_next[edge.from])) {
+                result.value[edge.from] = candidate;
+                result.policy[edge.from] = edge.action;
+                best_next[edge.from] = edge.to;
+                pq.push({candidate, edge.from});
             }
         }
-        result.policy[x] = best_action;
     }
 
     PolicyCheckResult check = check_policy_proper(graph, result.policy);
@@ -104,4 +188,3 @@ RolloutResult adversarial_rollout(
 }
 
 }  // namespace rsp
-

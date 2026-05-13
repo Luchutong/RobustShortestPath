@@ -3,7 +3,39 @@
 #include "rsp/bellman.hpp"
 #include "rsp/utils.hpp"
 
+#include <cmath>
+
 namespace rsp {
+namespace {
+
+bool has_negative_transition_cost(const RobustGraph& graph) {
+    for (const auto& node : graph.nodes) {
+        for (const auto& action : node.actions) {
+            for (const auto& tr : action.trans) {
+                if (tr.cost < -EPS) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool better_candidate(double value, int node, int action,
+                      double best_value, int best_node, int best_action) {
+    if (less_with_eps(value, best_value)) {
+        return true;
+    }
+    if (std::abs(value - best_value) > EPS) {
+        return false;
+    }
+    if (best_node < 0 || node < best_node) {
+        return true;
+    }
+    return node == best_node && action < best_action;
+}
+
+}  // namespace
 
 DijkstraLikeResult dijkstra_like(const RobustGraph& graph) {
     graph.validate();
@@ -16,6 +48,11 @@ DijkstraLikeResult dijkstra_like(const RobustGraph& graph) {
     finalized[graph.terminal] = true;
     result.finalize_order.push_back(graph.terminal);
     result.finalized_count = 1;
+
+    if (has_negative_transition_cost(graph)) {
+        result.success = false;
+        return result;
+    }
 
     while (result.finalized_count < graph.n) {
         int best_node = -1;
@@ -38,7 +75,7 @@ DijkstraLikeResult dijkstra_like(const RobustGraph& graph) {
                     continue;
                 }
                 const double candidate = action_value(graph, x, a, result.value);
-                if (less_with_eps(candidate, best_value)) {
+                if (better_candidate(candidate, x, a, best_value, best_node, best_action)) {
                     best_value = candidate;
                     best_node = x;
                     best_action = a;
@@ -63,4 +100,3 @@ DijkstraLikeResult dijkstra_like(const RobustGraph& graph) {
 }
 
 }  // namespace rsp
-

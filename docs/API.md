@@ -215,6 +215,8 @@ DijkstraLikeResult dijkstra_like(const RobustGraph& graph);
 
 - 第一版实现 naive label-setting。
 - 只有当 action 的所有 successors 已经 finalized 时，才可以计算该 action 的 candidate。
+- Dijkstra-like 只适用于非负转移代价；如果发现负代价，返回 `success=false`。
+- candidate 值相同时按较小 node id、再按较小 action index 固定 tie-breaking。
 - 如果无法继续确定新节点，返回 `success=false`.
 
 ## 8. Exhaustive Search
@@ -279,6 +281,10 @@ RolloutResult adversarial_rollout(
 说明：
 
 - baseline 不代表精确 RSP 求解器，只用于展示 nominal planning 在对抗环境下的风险。
+- deterministic baseline 先在确定化后的图上从 terminal 反向跑 shortest-path planning，再把得到的 action policy 放回原 RSP 图中用 `evaluate_proper_policy_dag` 计算真实 adversarial value。
+- `Nominal` 每个 action 使用第一个 successor；`BestCase` 允许确定化规划选择任意 successor；`WorstImmediate` 每个 action 使用 immediate cost 最大的 successor。
+- deterministic baseline 使用 Dijkstra-style shortest-path planning，因此同样要求非负转移代价；发现负代价时返回 `success=false`。
+- 如果得到的 deterministic policy 不是 proper，则 `success=false`。
 - `adversarial_rollout` 每步选择 `argmax_y [g + J(y)]`.
 
 ## 10. IO

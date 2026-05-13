@@ -23,9 +23,17 @@ target_include_directories(rsp PUBLIC include)
 add_executable(rsp_main src/main.cpp)
 target_link_libraries(rsp_main PRIVATE rsp)
 
+add_executable(run_robustness experiments/run_robustness.cpp)
+target_link_libraries(run_robustness PRIVATE rsp)
+
 add_executable(test_toy tests/test_toy.cpp)
 target_link_libraries(test_toy PRIVATE rsp)
 
+add_executable(test_hhm tests/test_hhm.cpp)
+target_link_libraries(test_hhm PRIVATE rsp)
+
 enable_testing()
 add_test(NAME test_toy COMMAND test_toy)
+add_test(NAME test_hhm COMMAND test_hhm)
 set_tests_properties(test_toy PROPERTIES WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+set_tests_properties(test_hhm PROPERTIES WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
