@@ -5,23 +5,60 @@
 计划完成：
 
 1. 实验 1：Toy Example，由 csy 汇总，调用 `vi`, `dijkstra`, `pi`, `exhaustive`, `baseline_nominal`.
-2. 实验 3：中规模效率比较，由 csy 汇总，调用 `vi`, `pi`, `dijkstra`.
+2. 实验 3：中规模效率比较，由 lct 汇总，调用 `vi`, `pi`, `dijkstra`.
 3. 实验 4：鲁棒性对比，由 hhm 和 lct 共同完成，比较 deterministic baselines 与 robust VI policy.
 
 成员接口：
 
 - hhm：提供 `dijkstra`, `baseline_nominal`, `baseline_bestcase`, `baseline_worst_immediate`.
-- lct：提供 `vi`, `exhaustive`.
-- csy：提供 `pi`, proper policy / IO / 结果汇总脚本。
+- lct：提供 `vi`, `exhaustive`, 实验 3 图生成与 runtime 汇总。
+- csy：提供 `pi`, proper policy / IO / 实验 1 汇总。
 
 建议脚本：
 
 1. `run_toy.sh`: 跑实验 1 的 toy graph。
-2. `run_runtime.sh`: 跑实验 3 的中规模图。
-3. `run_robustness`: C++ 入口，跑实验 4 的鲁棒性对比。
-4. `generate_graph.cpp` 或 Python 生成 layered graph，保证存在 proper policy。
+2. `generate_medium_graphs.py`: 生成实验 3 的中规模 layered DAG 图。
+3. `run_runtime`: C++ 入口，跑实验 3 的中规模效率比较。
+4. `run_robustness`: C++ 入口，跑实验 4 的鲁棒性对比。
 
 所有实验输出统一写入 `results/`。
+
+实验 3 当前命令：
+
+```bash
+python3 experiments/generate_medium_graphs.py \
+  --output data/random_graphs \
+  --sizes 20 50 100 200 \
+  --cases 20 \
+  --actions 3 \
+  --successors 2 \
+  --seed 42
+
+./build/run_runtime \
+  --input-dir data/random_graphs \
+  --output results \
+  --epsilon 1e-9 \
+  --max-iter 100000
+```
+
+输出：
+
+```text
+results/runtime_experiment.csv
+results/runtime_summary.csv
+```
+
+`runtime_experiment.csv` 字段：
+
+```csv
+graph_id,n,total_actions,total_transitions,algorithm,runtime_ms,iterations,converged,success,avg_value
+```
+
+`runtime_summary.csv` 字段：
+
+```csv
+n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_value
+```
 
 实验 4 当前命令：
 

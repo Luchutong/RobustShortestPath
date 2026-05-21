@@ -47,7 +47,7 @@ AlgorithmRunResult run_algorithm(
         out.residual_history = std::move(result.residual_history);
         out.iterations = result.iterations;
         out.converged = result.converged;
-        out.success = true;
+        out.success = result.converged;
         return out;
     }
 

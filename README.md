@@ -26,6 +26,8 @@ ctest --test-dir build --output-on-failure
 ./build/rsp_main --input data/toy_graph.txt --algorithm pi --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm exhaustive --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm baseline_nominal --output results
+python3 experiments/generate_medium_graphs.py --output data/random_graphs
+./build/run_runtime --input-dir data/random_graphs --output results
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
 ```
 
@@ -35,14 +37,16 @@ ctest --test-dir build --output-on-failure
 - `results/policies.csv`
 - `results/residual_history.csv`
 - `results/runtime.csv`
+- `results/runtime_experiment.csv`
+- `results/runtime_summary.csv`
 
 ## 小组分工
 
 | 成员 | 核心算法 | Baseline | 实验 | 主要文件 |
 | --- | --- | --- | --- | --- |
 | hhm | Dijkstra-like Algorithm | Baseline 1: Deterministic Dijkstra baseline | 实验 4 鲁棒性对比 | `include/rsp/dijkstra_like.hpp`, `src/dijkstra_like.cpp`, `include/rsp/baseline.hpp`, `src/baseline.cpp`, `experiments/` |
-| lct | Value Iteration, 值迭代 | Baseline 2: Exhaustive Search baseline | 实验 4 鲁棒性对比 | `include/rsp/value_iteration.hpp`, `src/value_iteration.cpp`, `include/rsp/exhaustive_search.hpp`, `src/exhaustive_search.cpp`, `experiments/` |
-| csy | 剩余核心内容：Policy Iteration、proper policy、IO、实验整合 | 剩余 baseline / rollout / 对比汇总 | 实验 1、实验 3、报告与可视化整合 | `include/rsp/policy_iteration.hpp`, `src/policy_iteration.cpp`, `include/rsp/proper_policy.hpp`, `src/proper_policy.cpp`, `src/io.cpp`, `visualization/`, `report/` |
+| lct | Value Iteration, 值迭代 | Baseline 2: Exhaustive Search baseline | 实验 3 中规模效率比较、实验 4 robust VI policy | `include/rsp/value_iteration.hpp`, `src/value_iteration.cpp`, `include/rsp/exhaustive_search.hpp`, `src/exhaustive_search.cpp`, `experiments/` |
+| csy | 剩余核心内容：Policy Iteration、proper policy、IO、实验整合 | 剩余 baseline / rollout / 对比汇总 | 实验 1、报告与可视化整合 | `include/rsp/policy_iteration.hpp`, `src/policy_iteration.cpp`, `include/rsp/proper_policy.hpp`, `src/proper_policy.cpp`, `src/io.cpp`, `visualization/`, `report/` |
 
 实验 4 由 hhm 和 lct 共同完成：hhm 负责 deterministic baseline policy，lct 负责 robust VI policy，csy 负责把结果汇总进报告和图表。
 
@@ -222,18 +226,34 @@ J(0)=7, J(1)=1, J(2)=101, J(3)=4, J(4)=100, J(5)=0
 目标：
 
 - 对 `vi`, `pi`, `dijkstra` 运行同一批随机图。
-- 比较 `runtime_ms`, `iterations`, `success`, `avg_value`.
+- 比较 `runtime_ms`, `iterations`, `success`, `success_rate`, `avg_value`.
 
-建议流程：
+生成中规模 layered DAG 随机图：
 
 ```bash
-# 后续由 csy 在 experiments/ 中补批量脚本
-./build/rsp_main --input data/random_graphs/medium_50_0.txt --algorithm vi --output results
-./build/rsp_main --input data/random_graphs/medium_50_0.txt --algorithm pi --output results
-./build/rsp_main --input data/random_graphs/medium_50_0.txt --algorithm dijkstra --output results
+python3 experiments/generate_medium_graphs.py \
+  --output data/random_graphs \
+  --sizes 20 50 100 200 \
+  --cases 20 \
+  --actions 3 \
+  --successors 2 \
+  --seed 42
 ```
 
-所有脚本只需要循环调用 `run_algorithm` 或 `rsp_main`，不要重新实现算法。
+批量运行效率实验：
+
+```bash
+./build/run_runtime \
+  --input-dir data/random_graphs \
+  --output results \
+  --epsilon 1e-9 \
+  --max-iter 100000
+```
+
+输出：
+
+- `results/runtime_experiment.csv`
+- `results/runtime_summary.csv`
 
 ### 实验 4：鲁棒性对比
 

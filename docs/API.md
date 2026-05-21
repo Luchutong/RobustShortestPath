@@ -377,6 +377,8 @@ AlgorithmRunResult run_algorithm(
 - 输入：`data/random_graphs/*.txt`
 - 核心算法：`vi`, `pi`, `dijkstra`
 - 统一指标：`runtime_ms`, `iterations`, `converged`, `success`, `avg_value`
+- 批量入口：`experiments/generate_medium_graphs.py`, `run_runtime`
+- 输出：`runtime_experiment.csv`, `runtime_summary.csv`
 
 实验 4 鲁棒性对比：
 

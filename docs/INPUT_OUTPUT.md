@@ -94,6 +94,20 @@ graph_id,n,total_actions,total_transitions,algorithm,runtime_ms,iterations,conve
 toy_graph,6,6,7,vi,0.052000,4,1,42.600000,1
 ```
 
+`runtime_experiment.csv`
+
+```csv
+graph_id,n,total_actions,total_transitions,algorithm,runtime_ms,iterations,converged,success,avg_value
+medium_n20_seed42,20,57,114,vi,0.120000,8,1,1,50.123456
+```
+
+`runtime_summary.csv`
+
+```csv
+n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_value
+20,vi,20,20,1.000000,0.120000,8.000000,50.123456
+```
+
 `robustness.csv`
 
 ```csv
@@ -112,7 +126,18 @@ toy_graph,2,vi,0,7.000000,1,2
 ./build/rsp_main --input data/toy_graph.txt --algorithm baseline_nominal --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm baseline_bestcase --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm baseline_worst_immediate --output results
+python3 experiments/generate_medium_graphs.py --output data/random_graphs
+./build/run_runtime --input-dir data/random_graphs --output results
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
+```
+
+`run_runtime` 可选参数：
+
+```bash
+--input-dir data/random_graphs
+--output results
+--max-iter 100000
+--epsilon 1e-9
 ```
 
 `run_robustness` 可选参数：
