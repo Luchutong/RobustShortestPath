@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560">
+  <rect x="0" y="0" width="1000" height="560" fill="#fffaf2" />
+  <rect x="36.00" y="32.00" width="928.00" height="492.00" fill="#fffdf9" stroke="#d3d8dd" stroke-width="1.20" rx="12.00" opacity="1.00" />
+  <text x="500.00" y="54.00" text-anchor="middle" font-size="16" font-weight="bold" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">Value Comparison on toy_graph</text>
+  <line x1="88.00" y1="480.00" x2="940.00" y2="480.00" stroke="#94a3b8" stroke-width="1.40" opacity="1.00" />
+  <line x1="88.00" y1="58.00" x2="88.00" y2="480.00" stroke="#94a3b8" stroke-width="1.40" opacity="1.00" />
+  <line x1="88.00" y1="480.00" x2="940.00" y2="480.00" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="78.00" y="484.00" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">0.0</text>
+  <line x1="88.00" y1="406.61" x2="940.00" y2="406.61" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="78.00" y="410.61" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">20.2</text>
+  <line x1="88.00" y1="333.22" x2="940.00" y2="333.22" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="78.00" y="337.22" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">40.4</text>
+  <line x1="88.00" y1="259.83" x2="940.00" y2="259.83" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="78.00" y="263.83" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">60.6</text>
+  <line x1="88.00" y1="186.43" x2="940.00" y2="186.43" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="78.00" y="190.43" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">80.8</text>
+  <line x1="88.00" y1="113.04" x2="940.00" y2="113.04" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="78.00" y="117.04" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">101.0</text>
+  <text x="52.00" y="269.00" text-anchor="middle" font-size="11" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">Worst-case value</text>
+  <rect x="107.88" y="454.57" width="22.56" height="25.43" fill="#1f4e5f" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="119.16" y="448.57" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">7.0</text>
+  <rect x="133.44" y="454.57" width="22.56" height="25.43" fill="#c75b39" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="144.72" y="448.57" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">7.0</text>
+  <rect x="159.00" y="454.57" width="22.56" height="25.43" fill="#768948" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="170.28" y="448.57" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">7.0</text>
+  <rect x="184.56" y="454.57" width="22.56" height="25.43" fill="#99627a" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="195.84" y="448.57" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">7.0</text>
+  <text x="157.58" y="502.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">node 0</text>
+  <rect x="249.88" y="476.37" width="22.56" height="3.63" fill="#1f4e5f" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="261.16" y="470.37" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">1.0</text>
+  <rect x="275.44" y="476.37" width="22.56" height="3.63" fill="#c75b39" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="286.72" y="470.37" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">1.0</text>
+  <rect x="301.00" y="476.37" width="22.56" height="3.63" fill="#768948" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="312.28" y="470.37" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">1.0</text>
+  <rect x="326.56" y="476.37" width="22.56" height="3.63" fill="#99627a" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="337.84" y="470.37" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">1.0</text>
+  <text x="299.58" y="502.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">node 1</text>
+  <rect x="391.88" y="113.04" width="22.56" height="366.96" fill="#1f4e5f" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="403.16" y="107.04" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">101.0</text>
+  <rect x="417.44" y="113.04" width="22.56" height="366.96" fill="#c75b39" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="428.72" y="107.04" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">101.0</text>
+  <rect x="443.00" y="113.04" width="22.56" height="366.96" fill="#768948" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="454.28" y="107.04" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">101.0</text>
+  <rect x="468.56" y="113.04" width="22.56" height="366.96" fill="#99627a" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="479.84" y="107.04" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">101.0</text>
+  <text x="441.58" y="502.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">node 2</text>
+  <rect x="533.88" y="465.47" width="22.56" height="14.53" fill="#1f4e5f" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="545.16" y="459.47" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">4.0</text>
+  <rect x="559.44" y="465.47" width="22.56" height="14.53" fill="#c75b39" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="570.72" y="459.47" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">4.0</text>
+  <rect x="585.00" y="465.47" width="22.56" height="14.53" fill="#768948" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="596.28" y="459.47" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">4.0</text>
+  <rect x="610.56" y="465.47" width="22.56" height="14.53" fill="#99627a" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="621.84" y="459.47" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">4.0</text>
+  <text x="583.58" y="502.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">node 3</text>
+  <rect x="675.88" y="116.68" width="22.56" height="363.32" fill="#1f4e5f" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="687.16" y="110.68" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">100.0</text>
+  <rect x="701.44" y="116.68" width="22.56" height="363.32" fill="#c75b39" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="712.72" y="110.68" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">100.0</text>
+  <rect x="727.00" y="116.68" width="22.56" height="363.32" fill="#768948" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="738.28" y="110.68" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">100.0</text>
+  <rect x="752.56" y="116.68" width="22.56" height="363.32" fill="#99627a" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="763.84" y="110.68" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">100.0</text>
+  <text x="725.58" y="502.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">node 4</text>
+  <rect x="817.88" y="480.00" width="22.56" height="0.00" fill="#1f4e5f" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="829.16" y="474.00" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">0.0</text>
+  <rect x="843.44" y="480.00" width="22.56" height="0.00" fill="#c75b39" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="854.72" y="474.00" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">0.0</text>
+  <rect x="869.00" y="480.00" width="22.56" height="0.00" fill="#768948" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="880.28" y="474.00" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">0.0</text>
+  <rect x="894.56" y="480.00" width="22.56" height="0.00" fill="#99627a" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.90" />
+  <text x="905.84" y="474.00" text-anchor="middle" font-size="9" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">0.0</text>
+  <text x="867.58" y="502.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">node 5</text>
+  <rect x="830.00" y="66.00" width="12.00" height="12.00" fill="#1f4e5f" stroke="none" stroke-width="0.00" rx="2.00" opacity="1.00" />
+  <text x="848.00" y="76.00" text-anchor="start" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">vi</text>
+  <rect x="830.00" y="86.00" width="12.00" height="12.00" fill="#c75b39" stroke="none" stroke-width="0.00" rx="2.00" opacity="1.00" />
+  <text x="848.00" y="96.00" text-anchor="start" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">pi</text>
+  <rect x="830.00" y="106.00" width="12.00" height="12.00" fill="#768948" stroke="none" stroke-width="0.00" rx="2.00" opacity="1.00" />
+  <text x="848.00" y="116.00" text-anchor="start" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">dijkstra</text>
+  <rect x="830.00" y="126.00" width="12.00" height="12.00" fill="#99627a" stroke="none" stroke-width="0.00" rx="2.00" opacity="1.00" />
+  <text x="848.00" y="136.00" text-anchor="start" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">exhaustive</text>
+</svg>

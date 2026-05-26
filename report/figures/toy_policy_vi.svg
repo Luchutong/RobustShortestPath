@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560">
+  <rect x="0" y="0" width="1000" height="560" fill="#fffaf2" />
+  <text x="500.00" y="36.00" text-anchor="middle" font-size="24" font-weight="bold" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">Policy View: vi on toy_graph</text>
+  <line x1="107.60" y1="271.80" x2="345.73" y2="93.20" stroke="#c7d0d9" stroke-width="1.60" opacity="0.52" />
+  <polygon points="345.73,93.20 339.73,105.20 332.53,95.60" fill="#c7d0d9" opacity="0.52" />
+  <rect x="184.67" y="160.50" width="84.00" height="20.00" fill="#ffffff" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.82" />
+  <text x="226.67" y="174.50" text-anchor="middle" font-size="10" font-weight="normal" fill="#8b98a5" font-family="DejaVu Sans, Arial, sans-serif">fast_risky | 1.0</text>
+  <line x1="112.00" y1="285.00" x2="341.33" y2="285.00" stroke="#c7d0d9" stroke-width="1.60" opacity="0.52" />
+  <polygon points="341.33,285.00 329.33,291.00 329.33,279.00" fill="#c7d0d9" opacity="0.52" />
+  <rect x="184.67" y="273.00" width="84.00" height="20.00" fill="#ffffff" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.82" />
+  <text x="226.67" y="287.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#8b98a5" font-family="DejaVu Sans, Arial, sans-serif">fast_risky | 1.0</text>
+  <line x1="107.60" y1="298.20" x2="345.73" y2="476.80" stroke="#c75b39" stroke-width="2.70" opacity="0.90" />
+  <polygon points="345.73,476.80 332.53,474.40 339.73,464.80" fill="#c75b39" opacity="0.90" />
+  <rect x="184.67" y="381.50" width="84.00" height="20.00" fill="#ffffff" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.82" />
+  <text x="226.67" y="395.50" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">safe | 3.0</text>
+  <line x1="383.93" y1="87.72" x2="889.40" y2="277.28" stroke="#1f4e5f" stroke-width="2.70" opacity="0.90" />
+  <polygon points="889.40,277.28 876.06,278.68 880.27,267.44" fill="#1f4e5f" opacity="0.90" />
+  <rect x="594.67" y="168.50" width="84.00" height="20.00" fill="#ffffff" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.82" />
+  <text x="636.67" y="182.50" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">finish | 1.0</text>
+  <line x1="385.33" y1="285.00" x2="614.67" y2="285.00" stroke="#1f4e5f" stroke-width="2.70" opacity="0.90" />
+  <polygon points="614.67,285.00 602.67,291.00 602.67,279.00" fill="#1f4e5f" opacity="0.90" />
+  <rect x="458.00" y="271.00" width="84.00" height="20.00" fill="#ffffff" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.82" />
+  <text x="500.00" y="285.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">trap_route | 1.0</text>
+  <line x1="383.93" y1="482.28" x2="889.40" y2="292.72" stroke="#1f4e5f" stroke-width="2.70" opacity="0.90" />
+  <polygon points="889.40,292.72 880.27,302.56 876.06,291.32" fill="#1f4e5f" opacity="0.90" />
+  <rect x="594.67" y="373.50" width="84.00" height="20.00" fill="#ffffff" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.82" />
+  <text x="636.67" y="387.50" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">safe_finish | 4.0</text>
+  <line x1="658.67" y1="285.00" x2="888.00" y2="285.00" stroke="#1f4e5f" stroke-width="2.70" opacity="0.90" />
+  <polygon points="888.00,285.00 876.00,291.00 876.00,279.00" fill="#1f4e5f" opacity="0.90" />
+  <rect x="731.33" y="271.00" width="84.00" height="20.00" fill="#ffffff" stroke="none" stroke-width="0.00" rx="5.00" opacity="0.82" />
+  <text x="773.33" y="285.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">expensive_finish | 100.0</text>
+  <circle cx="90.00" cy="285.00" r="18.00" fill="#f4efe6" stroke="#274c5e" stroke-width="2.40" />
+  <text x="90.00" y="289.00" text-anchor="middle" font-size="14" font-weight="bold" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">0</text>
+  <text x="90.00" y="323.00" text-anchor="middle" font-size="11" font-weight="normal" fill="#334155" font-family="DejaVu Sans, Arial, sans-serif">J=7.0</text>
+  <circle cx="363.33" cy="80.00" r="18.00" fill="#f4efe6" stroke="#274c5e" stroke-width="2.40" />
+  <text x="363.33" y="84.00" text-anchor="middle" font-size="14" font-weight="bold" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">1</text>
+  <text x="363.33" y="118.00" text-anchor="middle" font-size="11" font-weight="normal" fill="#334155" font-family="DejaVu Sans, Arial, sans-serif">J=1.0</text>
+  <circle cx="363.33" cy="285.00" r="18.00" fill="#f4efe6" stroke="#274c5e" stroke-width="2.40" />
+  <text x="363.33" y="289.00" text-anchor="middle" font-size="14" font-weight="bold" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">2</text>
+  <text x="363.33" y="323.00" text-anchor="middle" font-size="11" font-weight="normal" fill="#334155" font-family="DejaVu Sans, Arial, sans-serif">J=101.0</text>
+  <circle cx="363.33" cy="490.00" r="18.00" fill="#f4efe6" stroke="#274c5e" stroke-width="2.40" />
+  <text x="363.33" y="494.00" text-anchor="middle" font-size="14" font-weight="bold" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">3</text>
+  <text x="363.33" y="528.00" text-anchor="middle" font-size="11" font-weight="normal" fill="#334155" font-family="DejaVu Sans, Arial, sans-serif">J=4.0</text>
+  <circle cx="636.67" cy="285.00" r="18.00" fill="#f4efe6" stroke="#274c5e" stroke-width="2.40" />
+  <text x="636.67" y="289.00" text-anchor="middle" font-size="14" font-weight="bold" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">4</text>
+  <text x="636.67" y="323.00" text-anchor="middle" font-size="11" font-weight="normal" fill="#334155" font-family="DejaVu Sans, Arial, sans-serif">J=100.0</text>
+  <circle cx="910.00" cy="285.00" r="18.00" fill="#d8efe0" stroke="#274c5e" stroke-width="2.40" />
+  <text x="910.00" y="289.00" text-anchor="middle" font-size="14" font-weight="bold" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">T5</text>
+  <text x="910.00" y="323.00" text-anchor="middle" font-size="11" font-weight="normal" fill="#334155" font-family="DejaVu Sans, Arial, sans-serif">J=0.0</text>
+</svg>
