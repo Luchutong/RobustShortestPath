@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <set>
 #include <map>
 #include <iostream>
 #include <stdexcept>
@@ -85,6 +86,9 @@ Args parse_args(int argc, char** argv) {
     if (args.max_steps < 0) {
         throw std::invalid_argument("--max-steps must be non-negative");
     }
+    if (args.successor_set_size == 0 || args.successor_set_size < -1) {
+        throw std::invalid_argument("--s must be positive when provided");
+    }
     return args;
 }
 
@@ -134,20 +138,17 @@ int max_successor_set_size(const rsp::RobustGraph& graph) {
     int max_size = 0;
     for (const auto& node : graph.nodes) {
         for (const auto& action : node.actions) {
-            const int size = static_cast<int>(action.trans.size());
+            std::set<int> successors;
+            for (const auto& tr : action.trans) {
+                successors.insert(tr.to);
+            }
+            const int size = static_cast<int>(successors.size());
             if (size > max_size) {
                 max_size = size;
             }
         }
     }
     return max_size;
-}
-
-bool valid_rollout_policy(const rsp::RobustGraph& graph, const rsp::AlgorithmRunResult& run) {
-    if (!run.success || !run.converged || static_cast<int>(run.policy.size()) != graph.n) {
-        return false;
-    }
-    return rsp::check_policy_proper(graph, run.policy).proper;
 }
 
 std::string invalid_reason_for_run(

@@ -7,12 +7,51 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
     steps:
       - uses: actions/checkout@v4
       - name: Configure
-        run: cmake -S . -B build
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
       - name: Build
         run: cmake --build build -j
       - name: Test
         run: ctest --test-dir build --output-on-failure
+      - name: Generator Smoke Test
+        run: |
+          python3 experiments/generate_medium_graphs.py \
+            --output /tmp/rsp-ci-graphs \
+            --sizes 20 \
+            --cases 2 \
+            --actions 3 \
+            --successors 5 \
+            --seed 42
+          test -f /tmp/rsp-ci-graphs/graph_metadata.csv
+      - name: Runtime Smoke Test
+        run: |
+          ./build/run_runtime \
+            --input-dir /tmp/rsp-ci-graphs \
+            --output /tmp/rsp-ci-runtime \
+            --epsilon 1e-9 \
+            --max-iter 100000
+          test -f /tmp/rsp-ci-runtime/runtime_summary.csv
+      - name: Robustness Smoke Test
+        run: |
+          ./build/run_robustness \
+            --input data/toy_graph.txt \
+            --output /tmp/rsp-ci-robustness \
+            --start 0 \
+            --max-steps 20
+          test -f /tmp/rsp-ci-robustness/robustness.csv
 
+  sanitizer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DRSP_ENABLE_SANITIZERS=ON
+      - name: Build
+        run: cmake --build build -j
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

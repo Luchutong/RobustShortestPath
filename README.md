@@ -11,7 +11,7 @@
 ## 快速开始
 
 ```bash
-git clone git@github.com:Luchutong/RobustShortestPath.git
+git clone https://github.com/Luchutong/RobustShortestPath.git
 cd RobustShortestPath
 git checkout red
 
@@ -43,6 +43,7 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 - `results/runtime_summary.csv`
 - `results/robustness.csv`
 - `results/robustness_summary.csv`
+- `results/graph_metadata.csv`
 
 ## 小组分工
 
@@ -310,7 +311,7 @@ vi
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20 --s 2
 ```
 
-不传 `--s` 时，程序默认使用图中最大 successor count 作为该图的 `s` 标记。对 layered DAG 生成图来说，`s` 更准确地表示每个 action 不同 successor 数量的请求上界，而不是所有 action 都精确拥有同样大小的 successor set。
+不传 `--s` 时，程序默认使用图中最大 distinct successor count 作为该图的 `s` 标记。对 layered DAG 生成图来说，`s` 更准确地表示每个 action 不同 successor 数量的请求上界，而不是所有 action 都精确拥有同样大小的 successor set。若显式传入 `--s`，其值必须为正；目录模式下不允许再传 `--s`。
 
 结果建议输出：
 

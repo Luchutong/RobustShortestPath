@@ -41,6 +41,7 @@ public:
 - 节点编号为 `0..n-1`.
 - `terminal` 是终点编号。
 - `nodes[terminal].actions` 应为空。
+- 所有 transition cost 必须 finite 且非负。
 - `policy[x]` 存的是 `nodes[x].actions` 的下标，不是输入文件中的 `action_id`.
 - `policy[terminal] = -1`.
 
@@ -352,6 +353,10 @@ AlgorithmRunResult run_algorithm(
 );
 ```
 
+约定：
+
+- 对 `vi` / `rsp_main` / `run_runtime` 而言，`epsilon` 必须为正且 finite。
+
 当前注册的算法名：
 
 | 算法名 | 类型 | 负责人 | 调用的底层接口 |
@@ -395,3 +400,5 @@ AlgorithmRunResult run_algorithm(
 - 评估接口：`adversarial_rollout`
 - 单次输出：`graph_id,s,policy_type,start_node,policy_valid,status,worst_cost,terminated,steps`
 - 批量汇总输出：`s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,avg_worst_cost,avg_steps`
+- 若未显式传入 `--s`，当前实现默认使用图中最大 distinct successor count 作为 `s` 标记。
+- `generate_medium_graphs.py` 还会额外输出 `graph_metadata.csv`，记录 `requested_s,min_actual_s,max_actual_s,avg_actual_s`，用于解释实验 4 中请求上界和实际 successor 数之间的关系。

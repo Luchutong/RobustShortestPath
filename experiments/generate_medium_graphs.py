@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import random
 from pathlib import Path
 
@@ -78,7 +79,7 @@ def write_graph(
     successors_per_action: int,
     min_cost: float,
     max_cost: float,
-) -> None:
+) -> dict[str, float]:
     terminal = n - 1
     layers = build_layers(n)
     node_layer = {
@@ -86,6 +87,7 @@ def write_graph(
         for layer_index, layer in enumerate(layers)
         for node in layer
     }
+    actual_successor_counts: list[int] = []
 
     with path.open("w", encoding="utf-8") as out:
         out.write(f"{n} {terminal}\n")
@@ -104,11 +106,21 @@ def write_graph(
                 successors = choose_successors(
                     rng, candidates, successors_per_action, forced
                 )
+                actual_successor_counts.append(len(successors))
                 fields = [str(action), str(len(successors))]
                 for succ in successors:
                     fields.append(str(succ))
                     fields.append(f"{random_cost(rng, min_cost, max_cost):.6f}")
                 out.write(" ".join(fields) + "\n")
+
+    return {
+        "min_actual_s": min(actual_successor_counts) if actual_successor_counts else 0,
+        "max_actual_s": max(actual_successor_counts) if actual_successor_counts else 0,
+        "avg_actual_s": (
+            sum(actual_successor_counts) / len(actual_successor_counts)
+            if actual_successor_counts else 0.0
+        ),
+    }
 
 
 def main() -> None:
@@ -125,6 +137,7 @@ def main() -> None:
 
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
+    metadata_rows: list[dict[str, str | int | float]] = []
 
     generated = 0
     for n in args.sizes:
@@ -135,7 +148,7 @@ def main() -> None:
                 f"medium_n{n}_s{args.successors}_a{args.actions}_"
                 f"case{case}_seed{graph_seed}.txt"
             )
-            write_graph(
+            stats = write_graph(
                 path,
                 n,
                 rng,
@@ -144,9 +157,34 @@ def main() -> None:
                 args.min_cost,
                 args.max_cost,
             )
+            metadata_rows.append(
+                {
+                    "graph_id": path.stem,
+                    "requested_s": args.successors,
+                    "min_actual_s": stats["min_actual_s"],
+                    "max_actual_s": stats["max_actual_s"],
+                    "avg_actual_s": round(stats["avg_actual_s"], 6),
+                }
+            )
             generated += 1
 
+    metadata_path = output / "graph_metadata.csv"
+    with metadata_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "graph_id",
+                "requested_s",
+                "min_actual_s",
+                "max_actual_s",
+                "avg_actual_s",
+            ],
+        )
+        writer.writeheader()
+        writer.writerows(metadata_rows)
+
     print(f"generated {generated} graphs in {output}")
+    print(f"wrote metadata to {metadata_path}")
 
 
 if __name__ == "__main__":

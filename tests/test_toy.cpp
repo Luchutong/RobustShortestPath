@@ -6,12 +6,23 @@
 
 #include <cassert>
 #include <cmath>
+#include <cstdlib>
+#include <iostream>
 #include <vector>
 
 namespace {
 
+#define CHECK(cond)                                                            \
+    do {                                                                       \
+        if (!(cond)) {                                                         \
+            std::cerr << "CHECK failed: " #cond                                \
+                      << " at " << __FILE__ << ":" << __LINE__ << std::endl;   \
+            std::exit(1);                                                      \
+        }                                                                      \
+    } while (0)
+
 void expect_close(double actual, double expected) {
-    assert(std::abs(actual - expected) < 1e-8);
+    CHECK(std::abs(actual - expected) < 1e-8);
 }
 
 void check_toy_values(const std::vector<double>& value) {
@@ -30,19 +41,19 @@ int main() {
 
     auto vi = rsp::value_iteration(graph, 1e-9, 1000, true, true);
     check_toy_values(vi.value);
-    assert(vi.policy[0] == 1);
+    CHECK(vi.policy[0] == 1);
 
     auto pi = rsp::policy_iteration(graph);
     check_toy_values(pi.value);
-    assert(pi.policy[0] == 1);
+    CHECK(pi.policy[0] == 1);
 
     auto dij = rsp::dijkstra_like(graph);
-    assert(dij.success);
+    CHECK(dij.success);
     check_toy_values(dij.value);
-    assert(dij.policy[0] == 1);
+    CHECK(dij.policy[0] == 1);
 
     auto exhaustive = rsp::exhaustive_search(graph);
-    assert(exhaustive.success);
+    CHECK(exhaustive.success);
     check_toy_values(exhaustive.optimal_value_by_state);
 
     return 0;

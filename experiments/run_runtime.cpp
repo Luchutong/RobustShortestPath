@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -76,8 +77,8 @@ Args parse_args(int argc, char** argv) {
     if (args.max_iter < 0) {
         throw std::invalid_argument("--max-iter must be non-negative");
     }
-    if (args.epsilon <= 0.0) {
-        throw std::invalid_argument("--epsilon must be positive");
+    if (!(args.epsilon > 0.0) || !std::isfinite(args.epsilon)) {
+        throw std::invalid_argument("--epsilon must be positive and finite");
     }
     return args;
 }

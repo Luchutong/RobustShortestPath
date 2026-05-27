@@ -46,6 +46,7 @@ python3 experiments/generate_medium_graphs.py \
 ```text
 results/runtime_experiment.csv
 results/runtime_summary.csv
+results/graph_metadata.csv
 ```
 
 `runtime_experiment.csv` 字段：
@@ -58,6 +59,12 @@ graph_id,n,total_actions,total_transitions,algorithm,runtime_ms,iterations,conve
 
 ```csv
 n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_value
+```
+
+`graph_metadata.csv` 字段：
+
+```csv
+graph_id,requested_s,min_actual_s,max_actual_s,avg_actual_s
 ```
 
 实验 4 当前命令：
@@ -82,7 +89,7 @@ n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_v
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20 --s 2
 ```
 
-不传 `--s` 时，程序默认使用图中最大 successor count 作为该图的 `s` 标记。对于 layered DAG 生成图，这里的 `s` 更接近“每个 action 不同 successor 数量的请求上界”。
+不传 `--s` 时，程序默认使用图中最大 distinct successor count 作为该图的 `s` 标记。对于 layered DAG 生成图，这里的 `s` 更接近“每个 action 不同 successor 数量的请求上界”。若显式传入 `--s`，其值必须为正；目录模式下不允许再传 `--s`。
 
 输出 `results/robustness.csv`：
 

@@ -57,6 +57,9 @@ void RobustGraph::validate() const {
                 if (!std::isfinite(tr.cost)) {
                     throw std::invalid_argument("transition cost must be finite");
                 }
+                if (tr.cost < 0.0) {
+                    throw std::invalid_argument("transition cost must be non-negative");
+                }
             }
         }
     }

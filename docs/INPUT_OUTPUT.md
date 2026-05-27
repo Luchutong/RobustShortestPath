@@ -37,6 +37,7 @@ toy example：
 - 每个节点先写 action 数量。
 - 每个 action 一行：`action_id successor_count to cost to cost ...`.
 - terminal 节点 action 数为 `0`.
+- 所有 transition cost 必须 finite 且非负。
 
 ## JSON 图格式
 
@@ -108,6 +109,13 @@ n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_v
 20,vi,20,20,1.000000,0.120000,8.000000,50.123456
 ```
 
+`graph_metadata.csv`
+
+```csv
+graph_id,requested_s,min_actual_s,max_actual_s,avg_actual_s
+medium_n20_s5_a3_case0_seed42,5,1,5,3.947368
+```
+
 `robustness.csv`
 
 ```csv
@@ -149,7 +157,7 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 --epsilon 1e-9
 ```
 
-其中 `--max-iter` 必须非负，`--epsilon` 必须为正。
+其中 `--max-iter` 必须非负，`--epsilon` 必须为正且 finite。
 
 `run_robustness` 可选参数：
 
@@ -158,7 +166,7 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 --s 2
 ```
 
-如果不传 `--s`，程序默认用图中最大 successor set size 作为 `s`。目录模式下不允许再传 `--s` 覆盖整批图的标记。`--max-steps` 必须非负。
+如果不传 `--s`，程序默认用图中最大 distinct successor count 作为 `s`。目录模式下不允许再传 `--s` 覆盖整批图的标记；如果显式传入 `--s`，其值必须为正。`--max-steps` 必须非负。
 
 算法名统一使用：
 
