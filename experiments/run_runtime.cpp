@@ -73,6 +73,12 @@ Args parse_args(int argc, char** argv) {
             throw std::invalid_argument("unknown argument: " + key);
         }
     }
+    if (args.max_iter < 0) {
+        throw std::invalid_argument("--max-iter must be non-negative");
+    }
+    if (args.epsilon <= 0.0) {
+        throw std::invalid_argument("--epsilon must be positive");
+    }
     return args;
 }
 

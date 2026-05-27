@@ -97,7 +97,7 @@ toy graph 的核心结论如下：
 
 ## 4. 实验 4：鲁棒性对比
 
-实验 4 固定图规模 `n = 50`，逐步增加 successor set size `s = 1, 2, 3, 4, 5`，比较 deterministic baselines 与 robust VI policy 在 adversarial rollout 下的表现。
+实验 4 固定图规模 `n = 50`，逐步增加请求的 successor 上界 `s = 1, 2, 3, 4, 5`，比较 deterministic baselines 与 robust VI policy 在 adversarial rollout 下的表现。对 layered DAG 生成图而言，靠近 terminal 的 action 可能因为候选后继不足而拥有更小的实际 successor 数量，因此这里的 `s` 应理解为 requested upper bound，而不是每个 action 都精确等于该大小。
 
 正式汇总数据来自 [experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv](../experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv)。关键结果如下：
 

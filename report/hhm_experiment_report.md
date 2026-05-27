@@ -82,11 +82,10 @@ vi
 然后对每个 policy 从指定 start node 执行 adversarial rollout，输出：
 
 ```csv
-graph_id,s,policy_type,start_node,worst_cost,terminated,steps
+graph_id,s,policy_type,start_node,policy_valid,status,worst_cost,terminated,steps
 ```
 
-其中 `s` 取图中最大 successor set size，用来表示该图中的不确定性规模。
-如果批量实验已经由图生成器明确控制了 successor set size，也可以通过 `--s` 显式传入实验参数。
+其中 `s` 默认取图中最大 distinct successor count，用来表示该图中的不确定性规模；对于 layered DAG 生成图，更准确地说它是请求的 successor 上界在该图上的实际标记。如果批量实验已经由图生成器明确控制了该上界，则不需要再额外传 `--s`；目录模式下当前实现也不允许再手动覆盖。
 
 ## 3. Toy Graph 实验
 
@@ -127,17 +126,17 @@ ctest --test-dir build --output-on-failure
 单元测试结果：
 
 ```text
-2/2 tests passed
+3/3 tests passed
 ```
 
 鲁棒性对比输出：
 
 ```csv
-graph_id,s,policy_type,start_node,worst_cost,terminated,steps
-toy_graph,2,baseline_nominal,0,102.000000,1,3
-toy_graph,2,baseline_bestcase,0,102.000000,1,3
-toy_graph,2,baseline_worst_immediate,0,102.000000,1,3
-toy_graph,2,vi,0,7.000000,1,2
+graph_id,s,policy_type,start_node,policy_valid,status,worst_cost,terminated,steps
+toy_graph,2,baseline_nominal,0,1,ok,102.000000,1,3
+toy_graph,2,baseline_bestcase,0,1,ok,102.000000,1,3
+toy_graph,2,baseline_worst_immediate,0,1,ok,102.000000,1,3
+toy_graph,2,vi,0,1,ok,7.000000,1,2
 ```
 
 结果说明：

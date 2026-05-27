@@ -54,6 +54,12 @@ Args parse_args(int argc, char** argv) {
     if (args.input.empty()) {
         throw std::invalid_argument("--input is required");
     }
+    if (args.max_iter < 0) {
+        throw std::invalid_argument("--max-iter must be non-negative");
+    }
+    if (args.epsilon <= 0.0) {
+        throw std::invalid_argument("--epsilon must be positive");
+    }
     return args;
 }
 

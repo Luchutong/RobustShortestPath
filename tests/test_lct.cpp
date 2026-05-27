@@ -166,6 +166,13 @@ void test_runner_pi_requires_convergence() {
     assert(!run.success);
 }
 
+void test_policy_iteration_accepts_max_iter_only() {
+    const rsp::RobustGraph graph = rsp::read_graph_txt("data/toy_graph.txt");
+    const auto result = rsp::policy_iteration(graph, 100);
+    assert(result.converged);
+    assert(result.final_policy_proper);
+}
+
 void test_terminal_actions_are_rejected() {
     rsp::RobustGraph graph;
     graph.n = 2;
@@ -328,11 +335,50 @@ void test_generator_avoids_duplicate_successors() {
 void test_run_robustness_rejects_mixed_input_dir_with_override_s() {
     const std::string out_dir = "/tmp/rsp_robustness_override_out";
     const std::string cmd =
-        "cd /home/luchitong/算法实验/RobustShortestPath && "
         "./build/run_robustness --input-dir "
         "experiment_data/official_20260521_210335/exp4_robustness/graphs "
         "--output " + out_dir + " --start 0 --max-steps 1000 --s 3";
     assert(std::system(cmd.c_str()) != 0);
+    std::system(("rm -rf " + out_dir).c_str());
+}
+
+void test_run_robustness_rejects_negative_max_steps() {
+    const std::string out_dir = "/tmp/rsp_robustness_negative_steps_out";
+    const std::string cmd =
+        "./build/run_robustness --input data/toy_graph.txt "
+        "--output " + out_dir + " --start 0 --max-steps -1";
+    assert(std::system(cmd.c_str()) != 0);
+    std::system(("rm -rf " + out_dir).c_str());
+}
+
+void test_run_runtime_rejects_nonpositive_epsilon() {
+    const std::string out_dir = "/tmp/rsp_runtime_bad_epsilon_out";
+    const std::string cmd =
+        "./build/run_runtime --input-dir experiment_data/official_20260521_210335/exp3_runtime/graphs "
+        "--output " + out_dir + " --epsilon 0";
+    assert(std::system(cmd.c_str()) != 0);
+    std::system(("rm -rf " + out_dir).c_str());
+}
+
+void test_run_robustness_uses_unique_graph_ids_for_recursive_inputs() {
+    const std::string out_dir = "/tmp/rsp_robustness_graph_id_out";
+    std::system(("rm -rf " + out_dir).c_str());
+    const std::string cmd =
+        "./build/run_robustness --input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs "
+        "--output " + out_dir + " --start 0 --max-steps 50";
+    assert(std::system(cmd.c_str()) == 0);
+
+    std::ifstream in(out_dir + "/robustness.csv");
+    assert(static_cast<bool>(in));
+    std::string line;
+    std::getline(in, line);
+    std::set<std::string> graph_ids;
+    while (std::getline(in, line)) {
+        const std::size_t comma = line.find(',');
+        assert(comma != std::string::npos);
+        graph_ids.insert(line.substr(0, comma));
+    }
+    assert(graph_ids.size() == 100);
     std::system(("rm -rf " + out_dir).c_str());
 }
 
@@ -346,6 +392,7 @@ int main() {
     test_runner_vi_success_requires_convergence();
     test_runner_vi_rejects_no_proper_policy_graph();
     test_runner_pi_requires_convergence();
+    test_policy_iteration_accepts_max_iter_only();
     test_terminal_actions_are_rejected();
     test_negative_action_count_rejected();
     test_negative_node_count_rejected_before_resize();
@@ -355,5 +402,8 @@ int main() {
     test_generator_uses_distinct_filenames();
     test_generator_avoids_duplicate_successors();
     test_run_robustness_rejects_mixed_input_dir_with_override_s();
+    test_run_robustness_rejects_negative_max_steps();
+    test_run_runtime_rejects_nonpositive_epsilon();
+    test_run_robustness_uses_unique_graph_ids_for_recursive_inputs();
     return 0;
 }

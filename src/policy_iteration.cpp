@@ -11,8 +11,7 @@ namespace rsp {
 
 PolicyIterationResult policy_iteration(
     const RobustGraph& graph,
-    int max_outer_iter,
-    double epsilon
+    int max_outer_iter
 ) {
     graph.validate();
     PolicyIterationResult result;

@@ -11,7 +11,9 @@
 ## 快速开始
 
 ```bash
-cd /home/luchitong/算法实验/RobustShortestPath
+git clone git@github.com:Luchutong/RobustShortestPath.git
+cd RobustShortestPath
+git checkout red
 
 cmake -S . -B build
 cmake --build build -j
@@ -308,18 +310,18 @@ vi
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20 --s 2
 ```
 
-不传 `--s` 时，程序默认使用图中最大 successor set size。
+不传 `--s` 时，程序默认使用图中最大 successor count 作为该图的 `s` 标记。对 layered DAG 生成图来说，`s` 更准确地表示每个 action 不同 successor 数量的请求上界，而不是所有 action 都精确拥有同样大小的 successor set。
 
 结果建议输出：
 
 ```csv
-graph_id,s,policy_type,start_node,worst_cost,terminated,steps
+graph_id,s,policy_type,start_node,policy_valid,status,worst_cost,terminated,steps
 ```
 
 批量汇总输出：
 
 ```csv
-s,policy_type,cases,terminated_count,terminated_rate,avg_worst_cost,avg_steps
+s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,avg_worst_cost,avg_steps
 ```
 
 ## 仓库结构

@@ -189,8 +189,7 @@ struct PolicyIterationResult {
 
 PolicyIterationResult policy_iteration(
     const RobustGraph& graph,
-    int max_outer_iter = 10000,
-    double epsilon = 1e-9
+    int max_outer_iter = 10000
 );
 ```
 
@@ -199,6 +198,7 @@ PolicyIterationResult policy_iteration(
 - 从 `find_initial_proper_policy` 开始。
 - 每轮 improvement 后必须检查 properness。
 - tie-breaking 默认保留旧 action，减少策略震荡。
+- 当前实现不再暴露单独的 `epsilon` 停止参数；outer loop 仅以 policy stability 为停止标准。
 
 ## 7. Dijkstra-like
 
@@ -393,5 +393,5 @@ AlgorithmRunResult run_algorithm(
 - robust policy：优先用 `vi`
 - deterministic policy：`baseline_nominal`, `baseline_bestcase`, `baseline_worst_immediate`
 - 评估接口：`adversarial_rollout`
-- 单次输出：`graph_id,s,policy_type,start_node,policy_valid,invalid_reason,worst_cost,terminated,steps`
+- 单次输出：`graph_id,s,policy_type,start_node,policy_valid,status,worst_cost,terminated,steps`
 - 批量汇总输出：`s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,avg_worst_cost,avg_steps`

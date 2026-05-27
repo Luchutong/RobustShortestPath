@@ -56,7 +56,7 @@ AlgorithmRunResult run_algorithm(
     }
 
     if (algorithm_name == "pi") {
-        auto result = policy_iteration(graph, options.max_iter, options.epsilon);
+        auto result = policy_iteration(graph, options.max_iter);
         out.value = std::move(result.value);
         out.policy = std::move(result.policy);
         out.residual_history = std::move(result.residual_history);

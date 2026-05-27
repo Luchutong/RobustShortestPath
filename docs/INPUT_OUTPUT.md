@@ -111,9 +111,9 @@ n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_v
 `robustness.csv`
 
 ```csv
-graph_id,s,policy_type,start_node,policy_valid,invalid_reason,worst_cost,terminated,steps
-toy_graph,2,baseline_nominal,0,1,,102.000000,1,3
-toy_graph,2,vi,0,1,,7.000000,1,2
+graph_id,s,policy_type,start_node,policy_valid,status,worst_cost,terminated,steps
+toy_graph,2,baseline_nominal,0,1,ok,102.000000,1,3
+toy_graph,2,vi,0,1,ok,7.000000,1,2
 ```
 
 `robustness_summary.csv`
@@ -149,6 +149,8 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 --epsilon 1e-9
 ```
 
+其中 `--max-iter` 必须非负，`--epsilon` 必须为正。
+
 `run_robustness` 可选参数：
 
 ```bash
@@ -156,7 +158,7 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 --s 2
 ```
 
-如果不传 `--s`，程序默认用图中最大 successor set size 作为 `s`。目录模式下不允许再传 `--s` 覆盖整批图的标记。
+如果不传 `--s`，程序默认用图中最大 successor set size 作为 `s`。目录模式下不允许再传 `--s` 覆盖整批图的标记。`--max-steps` 必须非负。
 
 算法名统一使用：
 

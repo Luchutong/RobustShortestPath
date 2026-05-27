@@ -18,9 +18,7 @@ struct PolicyIterationResult {
 
 PolicyIterationResult policy_iteration(
     const RobustGraph& graph,
-    int max_outer_iter = 10000,
-    double epsilon = 1e-9
+    int max_outer_iter = 10000
 );
 
 }  // namespace rsp
-

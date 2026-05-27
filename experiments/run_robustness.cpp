@@ -31,7 +31,7 @@ struct RobustnessRow {
     std::string policy_type;
     int start_node = 0;
     bool policy_valid = false;
-    std::string invalid_reason;
+    std::string status;
     double worst_cost = rsp::INF;
     bool terminated = false;
     int steps = 0;
@@ -82,6 +82,9 @@ Args parse_args(int argc, char** argv) {
     if (args.input.empty() == args.input_dir.empty()) {
         throw std::invalid_argument("exactly one of --input or --input-dir is required");
     }
+    if (args.max_steps < 0) {
+        throw std::invalid_argument("--max-steps must be non-negative");
+    }
     return args;
 }
 
@@ -107,8 +110,24 @@ std::vector<std::filesystem::path> list_graph_files(const Args& args) {
     return files;
 }
 
-std::string graph_id_from_path(const std::string& input) {
-    return std::filesystem::path(input).stem().string();
+std::string graph_id_from_path(
+    const std::filesystem::path& path,
+    const std::string& input_dir
+) {
+    if (input_dir.empty()) {
+        return path.stem().string();
+    }
+    std::string value = std::filesystem::relative(path, input_dir).string();
+    for (char& ch : value) {
+        if (ch == '/' || ch == '\\') {
+            ch = '_';
+        }
+    }
+    const auto txt_pos = value.rfind(".txt");
+    if (txt_pos != std::string::npos && txt_pos + 4 == value.size()) {
+        value.erase(txt_pos);
+    }
+    return value;
 }
 
 int max_successor_set_size(const rsp::RobustGraph& graph) {
@@ -163,7 +182,7 @@ double safe_average(double sum, int count) {
 }
 
 void write_raw_header(std::ofstream& out) {
-    out << "graph_id,s,policy_type,start_node,policy_valid,invalid_reason,"
+    out << "graph_id,s,policy_type,start_node,policy_valid,status,"
            "worst_cost,terminated,steps\n";
 }
 
@@ -173,7 +192,7 @@ void write_raw_row(std::ofstream& out, const RobustnessRow& row) {
         << row.policy_type << ','
         << row.start_node << ','
         << (row.policy_valid ? 1 : 0) << ','
-        << row.invalid_reason << ','
+        << row.status << ','
         << rsp::format_value(row.worst_cost) << ','
         << (row.terminated ? 1 : 0) << ','
         << row.steps << '\n';
@@ -249,8 +268,8 @@ RobustnessRow run_one_algorithm(
 
     try {
         const auto run = rsp::run_algorithm(graph, algorithm);
-        row.invalid_reason = invalid_reason_for_run(graph, run);
-        row.policy_valid = row.invalid_reason.empty();
+        row.status = invalid_reason_for_run(graph, run);
+        row.policy_valid = row.status.empty();
         if (!row.policy_valid) {
             return row;
         }
@@ -260,11 +279,12 @@ RobustnessRow run_one_algorithm(
         row.worst_cost = rollout.cost;
         row.terminated = rollout.terminated;
         row.steps = rollout.steps;
+        row.status = row.terminated ? "ok" : "rollout_timeout";
         if (!row.terminated) {
-            row.invalid_reason = "rollout_timeout";
+            row.policy_valid = true;
         }
     } catch (const std::exception& e) {
-        row.invalid_reason = "algorithm_exception";
+        row.status = "algorithm_exception";
         std::cerr << "algorithm failed: graph=" << graph_id
                   << " algorithm=" << algorithm
                   << " error=" << e.what() << '\n';
@@ -305,7 +325,7 @@ int main(int argc, char** argv) {
                 throw std::invalid_argument("--start is out of range for graph " + file.string());
             }
 
-            const std::string graph_id = graph_id_from_path(file.string());
+            const std::string graph_id = graph_id_from_path(file, args.input_dir);
             const int successor_set_size = args.successor_set_size >= 0
                 ? args.successor_set_size
                 : max_successor_set_size(graph);
