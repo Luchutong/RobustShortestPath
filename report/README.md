@@ -18,5 +18,6 @@
 推荐流程：
 
 1. 先运行 C++ 程序生成 `results/*.csv`。
-2. 再运行 `visualization/*.py` 生成图片到 `report/figures/`。
-3. 最后把图插入 `experiment_results.md` 或组内最终总报告。
+2. 如果不想重跑全部实验，也可以直接使用仓库中已保存的正式数据：`experiment_data/official_20260521_210335/`。
+3. 再运行 `visualization/*.py` 生成图片到 `report/figures/`。
+4. 最后把图插入 `experiment_results.md` 或组内最终总报告。

@@ -1,6 +1,6 @@
 # 实验结果
 
-本节汇总 Robust Shortest Path, RSP, 复现实验中的主要图表与结论，覆盖 toy example、实验 3 的中规模效率比较，以及实验 4 的鲁棒性对比。实验所用图像位于 [figures](figures)，对应 CSV 数据位于项目根目录下的 [results](../results)。
+本节汇总 Robust Shortest Path, RSP, 复现实验中的主要图表与结论，覆盖 toy example、实验 3 的中规模效率比较，以及实验 4 的鲁棒性对比。实验所用图像位于 [figures](figures)。如果按本文命令重跑，CSV 会写到项目根目录下的 [results](../results)；仓库中随附的正式实验数据保存在 [experiment_data/official_20260521_210335](../experiment_data/official_20260521_210335)。
 
 ## 1. 实验总览
 
@@ -68,7 +68,7 @@ toy graph 的核心结论如下：
 
 ![runtime_comparison](figures/runtime_comparison.svg)
 
-根据 [results/runtime_summary.csv](../results/runtime_summary.csv) 中的正式数据，可以整理出如下结果：
+根据 [experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv](../experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv) 中的正式数据，可以整理出如下结果：
 
 | n | algorithm | success_rate | avg_runtime_ms | avg_iterations | avg_value |
 | --- | --- | ---: | ---: | ---: | ---: |
@@ -99,7 +99,7 @@ toy graph 的核心结论如下：
 
 实验 4 固定图规模 `n = 50`，逐步增加 successor set size `s = 1, 2, 3, 4, 5`，比较 deterministic baselines 与 robust VI policy 在 adversarial rollout 下的表现。
 
-正式汇总数据来自 [results/robustness_summary.csv](../results/robustness_summary.csv)。关键结果如下：
+正式汇总数据来自 [experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv](../experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv)。关键结果如下：
 
 | s | baseline_nominal | baseline_bestcase | baseline_worst_immediate | vi |
 | --- | ---: | ---: | ---: | ---: |
@@ -145,6 +145,18 @@ toy graph 的核心结论如下：
 ./build/rsp_main --input data/toy_graph.txt --algorithm baseline_nominal --output results
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
 
+./build/run_runtime \
+  --input-dir experiment_data/official_20260521_210335/exp3_runtime/graphs \
+  --output results \
+  --epsilon 1e-9 \
+  --max-iter 100000
+
+./build/run_robustness \
+  --input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs \
+  --output results \
+  --start 0 \
+  --max-steps 1000
+
 python3 visualization/plot_graph.py \
   --graph-json data/toy_graph.json \
   --output report/figures/toy_graph.svg
@@ -174,5 +186,14 @@ python3 visualization/plot_toy_steps.py \
 python3 visualization/plot_comparison.py \
   --runtime-summary-csv results/runtime_summary.csv \
   --robustness-summary-csv results/robustness_summary.csv \
+  --output report/figures/runtime_comparison.svg
+```
+
+如果只想复用仓库内随附的正式数据，而不重新运行所有实验，可以把最后一条命令改为：
+
+```bash
+python3 visualization/plot_comparison.py \
+  --runtime-summary-csv experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv \
+  --robustness-summary-csv experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv \
   --output report/figures/runtime_comparison.svg
 ```

@@ -39,6 +39,8 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 - `results/runtime.csv`
 - `results/runtime_experiment.csv`
 - `results/runtime_summary.csv`
+- `results/robustness.csv`
+- `results/robustness_summary.csv`
 
 ## 小组分工
 
@@ -290,6 +292,16 @@ vi
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
 ```
 
+批量运行实验 4 正式对比：
+
+```bash
+./build/run_robustness \
+  --input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs \
+  --output results \
+  --start 0 \
+  --max-steps 1000
+```
+
 如果批量实验中 `s` 是图生成器控制的实验参数，可以显式传入：
 
 ```bash
@@ -302,6 +314,12 @@ vi
 
 ```csv
 graph_id,s,policy_type,start_node,worst_cost,terminated,steps
+```
+
+批量汇总输出：
+
+```csv
+s,policy_type,cases,terminated_count,terminated_rate,avg_worst_cost,avg_steps
 ```
 
 ## 仓库结构

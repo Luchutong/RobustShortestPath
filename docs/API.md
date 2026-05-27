@@ -385,4 +385,5 @@ AlgorithmRunResult run_algorithm(
 - robust policy：优先用 `vi`
 - deterministic policy：`baseline_nominal`, `baseline_bestcase`, `baseline_worst_immediate`
 - 评估接口：`adversarial_rollout`
-- 建议输出：`graph_id,s,policy_type,start_node,worst_cost,terminated,steps`
+- 单次输出：`graph_id,s,policy_type,start_node,worst_cost,terminated,steps`
+- 批量汇总输出：`s,policy_type,cases,terminated_count,terminated_rate,avg_worst_cost,avg_steps`

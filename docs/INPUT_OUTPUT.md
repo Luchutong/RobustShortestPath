@@ -116,6 +116,14 @@ toy_graph,2,baseline_nominal,0,102.000000,1,3
 toy_graph,2,vi,0,7.000000,1,2
 ```
 
+`robustness_summary.csv`
+
+```csv
+s,policy_type,cases,terminated_count,terminated_rate,avg_worst_cost,avg_steps
+2,baseline_nominal,20,20,1.000000,57.428797,5.000000
+2,vi,20,20,1.000000,40.032566,4.450000
+```
+
 ## 命令行接口
 
 ```bash
@@ -129,6 +137,7 @@ toy_graph,2,vi,0,7.000000,1,2
 python3 experiments/generate_medium_graphs.py --output data/random_graphs
 ./build/run_runtime --input-dir data/random_graphs --output results
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
+./build/run_robustness --input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs --output results --start 0 --max-steps 1000
 ```
 
 `run_runtime` 可选参数：
@@ -143,18 +152,11 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 `run_robustness` 可选参数：
 
 ```bash
+--input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs
 --s 2
 ```
 
 如果不传 `--s`，程序默认用图中最大 successor set size 作为 `s`。
-
-可选参数：
-
-```bash
---max-iter 100000
---epsilon 1e-9
---zero-init
-```
 
 算法名统一使用：
 

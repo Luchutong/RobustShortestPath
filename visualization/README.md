@@ -49,9 +49,17 @@ python3 visualization/plot_comparison.py \
 	--output report/figures/runtime_comparison.svg
 ```
 
+如果直接复用仓库中已保存的正式实验数据，可改用：
+
+```bash
+python3 visualization/plot_comparison.py \
+	--runtime-summary-csv experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv \
+	--robustness-summary-csv experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv \
+	--output report/figures/runtime_comparison.svg
+```
+
 依赖：
 
 - Python 3
 
 脚本默认输出 SVG，不依赖 matplotlib、pandas 或 networkx。
-

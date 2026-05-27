@@ -66,6 +66,16 @@ n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_v
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
 ```
 
+批量运行正式鲁棒性对比：
+
+```bash
+./build/run_robustness \
+  --input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs \
+  --output results \
+  --start 0 \
+  --max-steps 1000
+```
+
 如果实验图的 successor set size 是外部控制变量，可以显式传入：
 
 ```bash
@@ -78,4 +88,10 @@ n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_v
 
 ```csv
 graph_id,s,policy_type,start_node,worst_cost,terminated,steps
+```
+
+批量运行时还会额外输出 `results/robustness_summary.csv`：
+
+```csv
+s,policy_type,cases,terminated_count,terminated_rate,avg_worst_cost,avg_steps
 ```
