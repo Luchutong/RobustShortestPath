@@ -1,6 +1,7 @@
 #include "rsp/value_iteration.hpp"
 
 #include "rsp/bellman.hpp"
+#include "rsp/proper_policy.hpp"
 #include "rsp/utils.hpp"
 
 #include <algorithm>
@@ -44,8 +45,15 @@ ValueIterationResult value_iteration(
     }
 
     result.policy = extract_greedy_policy(graph, result.value);
+    result.final_policy_proper = check_policy_proper(graph, result.policy).proper;
+    result.all_values_finite = true;
+    for (int x = 0; x < graph.n; ++x) {
+        if (!graph.is_terminal(x) && is_inf(result.value[x])) {
+            result.all_values_finite = false;
+            break;
+        }
+    }
     return result;
 }
 
 }  // namespace rsp
-

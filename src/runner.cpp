@@ -4,6 +4,8 @@
 #include "rsp/dijkstra_like.hpp"
 #include "rsp/exhaustive_search.hpp"
 #include "rsp/policy_iteration.hpp"
+#include "rsp/proper_policy.hpp"
+#include "rsp/utils.hpp"
 #include "rsp/value_iteration.hpp"
 
 #include <stdexcept>
@@ -47,7 +49,9 @@ AlgorithmRunResult run_algorithm(
         out.residual_history = std::move(result.residual_history);
         out.iterations = result.iterations;
         out.converged = result.converged;
-        out.success = result.converged;
+        out.success = result.converged &&
+            result.final_policy_proper &&
+            result.all_values_finite;
         return out;
     }
 
@@ -58,7 +62,7 @@ AlgorithmRunResult run_algorithm(
         out.residual_history = std::move(result.residual_history);
         out.iterations = result.outer_iterations;
         out.converged = result.converged;
-        out.success = result.final_policy_proper;
+        out.success = result.converged && result.final_policy_proper;
         return out;
     }
 

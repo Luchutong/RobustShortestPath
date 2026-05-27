@@ -170,6 +170,19 @@ void test_baseline_plans_over_full_deterministic_distance() {
     expect_close(worst_immediate.value[0], 6.0);
 }
 
+void test_rollout_rejects_mismatched_sizes() {
+    const rsp::RobustGraph graph = rsp::read_graph_txt("data/toy_graph.txt");
+    const auto bad_policy_rollout = rsp::adversarial_rollout(
+        graph, std::vector<int>{0, 0}, std::vector<double>(graph.n, 0.0), 0, 20);
+    assert(!bad_policy_rollout.terminated);
+    assert(bad_policy_rollout.path.empty());
+
+    const auto bad_value_rollout = rsp::adversarial_rollout(
+        graph, std::vector<int>(graph.n, 0), std::vector<double>{0.0, 0.0}, 0, 20);
+    assert(!bad_value_rollout.terminated);
+    assert(bad_value_rollout.path.empty());
+}
+
 }  // namespace
 
 int main() {
@@ -179,5 +192,6 @@ int main() {
     test_baseline_rejects_negative_costs();
     test_baseline_modes_can_choose_different_actions();
     test_baseline_plans_over_full_deterministic_distance();
+    test_rollout_rejects_mismatched_sizes();
     return 0;
 }

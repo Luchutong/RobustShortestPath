@@ -1,5 +1,7 @@
 #include "rsp/graph.hpp"
 
+#include <cmath>
+
 namespace rsp {
 
 int RobustGraph::total_actions() const {
@@ -36,6 +38,9 @@ void RobustGraph::validate() const {
             throw std::invalid_argument("node id must match its index");
         }
         if (is_terminal(x)) {
+            if (!nodes[x].actions.empty()) {
+                throw std::invalid_argument("terminal node must not have actions");
+            }
             continue;
         }
         if (nodes[x].actions.empty()) {
@@ -49,10 +54,12 @@ void RobustGraph::validate() const {
                 if (tr.to < 0 || tr.to >= n) {
                     throw std::invalid_argument("successor is out of range");
                 }
+                if (!std::isfinite(tr.cost)) {
+                    throw std::invalid_argument("transition cost must be finite");
+                }
             }
         }
     }
 }
 
 }  // namespace rsp
-

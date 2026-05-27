@@ -62,7 +62,7 @@ PolicyIterationResult policy_iteration(
         result.policy_change_history.push_back(changes);
         result.residual_history.push_back(residual);
 
-        if (changes == 0 || (!is_inf(residual) && residual < epsilon)) {
+        if (changes == 0) {
             result.value = J;
             result.converged = true;
             break;
@@ -85,4 +85,3 @@ PolicyIterationResult policy_iteration(
 }
 
 }  // namespace rsp
-

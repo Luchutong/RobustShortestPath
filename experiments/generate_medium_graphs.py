@@ -47,17 +47,22 @@ def choose_successors(
     count: int,
     forced: int | None = None,
 ) -> list[int]:
+    ordered_candidates = list(dict.fromkeys(candidates))
     successors: list[int] = []
-    if forced is not None:
+    if forced is not None and forced in ordered_candidates:
         successors.append(forced)
-    while len(successors) < count:
-        if len(candidates) >= count:
-            candidate = rng.choice(candidates)
-            if candidate in successors:
-                continue
-            successors.append(candidate)
-        else:
-            successors.append(rng.choice(candidates))
+        ordered_candidates = [node for node in ordered_candidates if node != forced]
+
+    remaining = max(0, count - len(successors))
+    if remaining == 0:
+        return successors
+    if not ordered_candidates:
+        return successors
+
+    if remaining >= len(ordered_candidates):
+        successors.extend(ordered_candidates)
+    else:
+        successors.extend(rng.sample(ordered_candidates, remaining))
     return successors
 
 
@@ -126,7 +131,10 @@ def main() -> None:
         for case in range(args.cases):
             graph_seed = args.seed + case
             rng = random.Random(args.seed * 1_000_003 + n * 9_176 + case)
-            path = output / f"medium_n{n}_seed{graph_seed}.txt"
+            path = output / (
+                f"medium_n{n}_s{args.successors}_a{args.actions}_"
+                f"case{case}_seed{graph_seed}.txt"
+            )
             write_graph(
                 path,
                 n,

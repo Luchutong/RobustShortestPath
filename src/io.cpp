@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
+#include <cmath>
 #include <stdexcept>
 
 namespace rsp {
@@ -47,6 +48,9 @@ RobustGraph read_graph_txt(const std::string& path) {
         if (!in) {
             throw std::runtime_error("failed to read action count");
         }
+        if (action_count < 0) {
+            throw std::runtime_error("negative action count");
+        }
 
         graph.nodes[x].actions.resize(action_count);
         for (int a = 0; a < action_count; ++a) {
@@ -56,11 +60,17 @@ RobustGraph read_graph_txt(const std::string& path) {
             if (!in) {
                 throw std::runtime_error("failed to read action header");
             }
+            if (successor_count < 0) {
+                throw std::runtime_error("negative successor count");
+            }
             for (int k = 0; k < successor_count; ++k) {
                 Transition tr;
                 in >> tr.to >> tr.cost;
                 if (!in) {
                     throw std::runtime_error("failed to read transition");
+                }
+                if (!std::isfinite(tr.cost)) {
+                    throw std::runtime_error("transition cost must be finite");
                 }
                 action.trans.push_back(tr);
             }
@@ -200,4 +210,3 @@ void append_runtime_csv(
 }
 
 }  // namespace rsp
-

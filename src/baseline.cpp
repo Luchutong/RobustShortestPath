@@ -150,6 +150,15 @@ RolloutResult adversarial_rollout(
 ) {
     graph.validate();
     RolloutResult result;
+    if (policy.size() != static_cast<size_t>(graph.n)) {
+        return result;
+    }
+    if (J.size() != static_cast<size_t>(graph.n)) {
+        return result;
+    }
+    if (start < 0 || start >= graph.n) {
+        return result;
+    }
     int x = start;
     result.path.push_back(x);
 

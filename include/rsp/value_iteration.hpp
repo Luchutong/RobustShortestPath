@@ -11,6 +11,8 @@ struct ValueIterationResult {
     std::vector<int> policy;
     int iterations = 0;
     bool converged = false;
+    bool final_policy_proper = false;
+    bool all_values_finite = false;
     std::vector<double> residual_history;
     std::vector<std::vector<double>> value_history;
 };
@@ -24,4 +26,3 @@ ValueIterationResult value_iteration(
 );
 
 }  // namespace rsp
-
