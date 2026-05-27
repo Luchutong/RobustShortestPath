@@ -155,9 +155,6 @@ std::string invalid_reason_for_run(
     const rsp::RobustGraph& graph,
     const rsp::AlgorithmRunResult& run
 ) {
-    if (!run.success) {
-        return "algorithm_not_successful";
-    }
     if (!run.converged) {
         return "algorithm_not_converged";
     }
@@ -174,6 +171,9 @@ std::string invalid_reason_for_run(
         if (!graph.is_terminal(x) && rsp::is_inf(run.value[x])) {
             return "value_not_finite";
         }
+    }
+    if (!run.success) {
+        return "algorithm_not_successful";
     }
     return "";
 }

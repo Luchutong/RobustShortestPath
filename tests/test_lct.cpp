@@ -85,6 +85,27 @@ std::string write_temp_graph_file(const std::string& body, const std::string& su
     return path;
 }
 
+std::string read_text_file(const std::string& path) {
+    std::ifstream in(path);
+    CHECK(static_cast<bool>(in));
+    return std::string(
+        std::istreambuf_iterator<char>(in),
+        std::istreambuf_iterator<char>());
+}
+
+std::string shell_quote(const std::string& s) {
+    std::string out = "'";
+    for (char c : s) {
+        if (c == '\'') {
+            out += "'\\''";
+        } else {
+            out += c;
+        }
+    }
+    out += "'";
+    return out;
+}
+
 void test_toy_vi_matches_exhaustive() {
     const rsp::RobustGraph graph = rsp::read_graph_txt("data/toy_graph.txt");
     const auto vi = rsp::value_iteration(graph, 1e-9, 1000, true, false);
@@ -312,7 +333,7 @@ void test_generator_avoids_duplicate_successors() {
     for (int node = 0; node < n; ++node) {
         int action_count = 0;
         in >> action_count;
-        assert(static_cast<bool>(in));
+        CHECK(static_cast<bool>(in));
         for (int action = 0; action < action_count; ++action) {
             int action_id = -1;
             int successor_count = 0;
@@ -382,48 +403,71 @@ void test_generator_writes_metadata_csv() {
 
 void test_run_robustness_rejects_mixed_input_dir_with_override_s() {
     const std::string out_dir = "/tmp/rsp_robustness_override_out";
+    const std::string err_path = "/tmp/rsp_robustness_override_out.err";
     const std::string cmd =
-        std::string(RSP_RUN_ROBUSTNESS) + " --input-dir "
+        shell_quote(std::string(RSP_RUN_ROBUSTNESS)) + " --input-dir "
         "experiment_data/official_20260521_210335/exp4_robustness/graphs "
-        "--output " + out_dir + " --start 0 --max-steps 1000 --s 3";
+        "--output " + out_dir + " --start 0 --max-steps 1000 --s 3 "
+        "2> " + shell_quote(err_path);
     CHECK(std::system(cmd.c_str()) != 0);
+    CHECK(read_text_file(err_path).find("--s cannot be used together with --input-dir") != std::string::npos);
     CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
+    std::remove(err_path.c_str());
 }
 
 void test_run_robustness_rejects_negative_max_steps() {
     const std::string out_dir = "/tmp/rsp_robustness_negative_steps_out";
+    const std::string err_path = "/tmp/rsp_robustness_negative_steps_out.err";
     const std::string cmd =
-        std::string(RSP_RUN_ROBUSTNESS) + " --input data/toy_graph.txt "
-        "--output " + out_dir + " --start 0 --max-steps -1";
+        shell_quote(std::string(RSP_RUN_ROBUSTNESS)) + " --input data/toy_graph.txt "
+        "--output " + out_dir + " --start 0 --max-steps -1 "
+        "2> " + shell_quote(err_path);
     CHECK(std::system(cmd.c_str()) != 0);
+    CHECK(read_text_file(err_path).find("--max-steps must be non-negative") != std::string::npos);
     CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
+    std::remove(err_path.c_str());
 }
 
 void test_run_runtime_rejects_nonpositive_epsilon() {
     const std::string out_dir = "/tmp/rsp_runtime_bad_epsilon_out";
+    const std::string err_path = "/tmp/rsp_runtime_bad_epsilon_out.err";
     const std::string cmd =
-        std::string(RSP_RUN_RUNTIME) + " --input-dir experiment_data/official_20260521_210335/exp3_runtime/graphs "
-        "--output " + out_dir + " --epsilon 0";
+        shell_quote(std::string(RSP_RUN_RUNTIME)) +
+        " --input-dir experiment_data/official_20260521_210335/exp3_runtime/graphs "
+        "--output " + out_dir + " --epsilon 0 "
+        "2> " + shell_quote(err_path);
     CHECK(std::system(cmd.c_str()) != 0);
+    CHECK(read_text_file(err_path).find("--epsilon must be positive and finite") != std::string::npos);
     CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
+    std::remove(err_path.c_str());
 }
 
 void test_run_runtime_rejects_nonfinite_epsilon() {
     const std::string out_dir = "/tmp/rsp_runtime_bad_nonfinite_epsilon_out";
+    const std::string err_path = "/tmp/rsp_runtime_bad_nonfinite_epsilon_out.err";
     const std::string cmd =
-        std::string(RSP_RUN_RUNTIME) + " --input-dir experiment_data/official_20260521_210335/exp3_runtime/graphs "
-        "--output " + out_dir + " --epsilon inf";
+        shell_quote(std::string(RSP_RUN_RUNTIME)) +
+        " --input-dir experiment_data/official_20260521_210335/exp3_runtime/graphs "
+        "--output " + out_dir + " --epsilon inf "
+        "2> " + shell_quote(err_path);
     CHECK(std::system(cmd.c_str()) != 0);
+    CHECK(read_text_file(err_path).find("--epsilon must be positive and finite") != std::string::npos);
     CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
+    std::remove(err_path.c_str());
 }
 
 void test_rsp_main_rejects_nonfinite_epsilon() {
     const std::string out_dir = "/tmp/rsp_main_bad_nonfinite_epsilon_out";
+    const std::string err_path = "/tmp/rsp_main_bad_nonfinite_epsilon_out.err";
     const std::string cmd =
-        std::string(RSP_MAIN_BIN) + " --input data/toy_graph.txt --algorithm vi "
-        "--output " + out_dir + " --epsilon nan";
-    assert(std::system(cmd.c_str()) != 0);
+        shell_quote(std::string(RSP_MAIN_BIN)) +
+        " --input data/toy_graph.txt --algorithm vi "
+        "--output " + out_dir + " --epsilon nan "
+        "2> " + shell_quote(err_path);
+    CHECK(std::system(cmd.c_str()) != 0);
+    CHECK(read_text_file(err_path).find("--epsilon must be positive and finite") != std::string::npos);
     CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
+    std::remove(err_path.c_str());
 }
 
 void test_run_robustness_uses_unique_graph_ids_for_recursive_inputs() {
@@ -450,15 +494,23 @@ void test_run_robustness_uses_unique_graph_ids_for_recursive_inputs() {
 
 void test_run_robustness_rejects_nonpositive_s() {
     const std::string out_dir = "/tmp/rsp_robustness_bad_s_out";
+    const std::string zero_err = "/tmp/rsp_robustness_bad_s_zero.err";
+    const std::string negative_err = "/tmp/rsp_robustness_bad_s_negative.err";
     const std::string zero_cmd =
-        std::string(RSP_RUN_ROBUSTNESS) + " --input data/toy_graph.txt "
-        "--output " + out_dir + " --start 0 --max-steps 20 --s 0";
+        shell_quote(std::string(RSP_RUN_ROBUSTNESS)) + " --input data/toy_graph.txt "
+        "--output " + out_dir + " --start 0 --max-steps 20 --s 0 "
+        "2> " + shell_quote(zero_err);
     const std::string negative_cmd =
-        std::string(RSP_RUN_ROBUSTNESS) + " --input data/toy_graph.txt "
-        "--output " + out_dir + " --start 0 --max-steps 20 --s -3";
+        shell_quote(std::string(RSP_RUN_ROBUSTNESS)) + " --input data/toy_graph.txt "
+        "--output " + out_dir + " --start 0 --max-steps 20 --s -3 "
+        "2> " + shell_quote(negative_err);
     CHECK(std::system(zero_cmd.c_str()) != 0);
     CHECK(std::system(negative_cmd.c_str()) != 0);
+    CHECK(read_text_file(zero_err).find("--s must be positive when provided") != std::string::npos);
+    CHECK(read_text_file(negative_err).find("--s must be positive when provided") != std::string::npos);
     CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
+    std::remove(zero_err.c_str());
+    std::remove(negative_err.c_str());
 }
 
 void test_run_robustness_uses_distinct_successor_count_for_default_s() {

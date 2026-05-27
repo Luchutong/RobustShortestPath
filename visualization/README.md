@@ -2,6 +2,8 @@
 
 Python 可视化脚本放在这里。脚本只读取 `data/*.json` 和 `results/*.csv`，不重新实现算法。
 
+如果要对实验 4 中的 requested `s` 与实际 successor 数量关系做说明，建议同时参考生成器输出的 `graph_metadata.csv`。
+
 建议脚本：
 
 - `plot_graph.py`: action-node graph.

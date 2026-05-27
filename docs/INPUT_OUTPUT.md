@@ -109,6 +109,11 @@ n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_v
 20,vi,20,20,1.000000,0.120000,8.000000,50.123456
 ```
 
+说明：
+
+- `avg_runtime_ms` 对所有运行样本求平均。
+- `avg_iterations` 与 `avg_value` 只对成功运行样本求平均。
+
 `graph_metadata.csv`
 
 ```csv
@@ -131,6 +136,12 @@ s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,avg_
 2,baseline_nominal,20,20,1.000000,20,1.000000,57.428797,5.000000
 2,vi,20,20,1.000000,20,1.000000,40.032566,4.450000
 ```
+
+说明：
+
+- `valid_rate = valid_count / cases`
+- `terminated_rate = terminated_count / cases`
+- `avg_worst_cost` 与 `avg_steps` 只对 `policy_valid=true` 且 `terminated=true` 的样本求平均。
 
 ## 命令行接口
 
@@ -162,8 +173,11 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 `run_robustness` 可选参数：
 
 ```bash
---input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs
+单图模式可选：
 --s 2
+
+目录模式可选：
+--input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs
 ```
 
 如果不传 `--s`，程序默认用图中最大 distinct successor count 作为 `s`。目录模式下不允许再传 `--s` 覆盖整批图的标记；如果显式传入 `--s`，其值必须为正。`--max-steps` 必须非负。
