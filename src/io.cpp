@@ -39,6 +39,12 @@ RobustGraph read_graph_txt(const std::string& path) {
     if (!in) {
         throw std::runtime_error("failed to read graph header");
     }
+    if (graph.n <= 0) {
+        throw std::runtime_error("node count must be positive");
+    }
+    if (graph.terminal < 0 || graph.terminal >= graph.n) {
+        throw std::runtime_error("terminal index out of range");
+    }
 
     graph.nodes.resize(graph.n);
     for (int x = 0; x < graph.n; ++x) {
@@ -189,7 +195,7 @@ void append_runtime_csv(
     if (!out) throw std::runtime_error("failed to open runtime csv");
     if (header) {
         out << "graph_id,n,total_actions,total_transitions,algorithm,runtime_ms,"
-               "iterations,converged,avg_value,success\n";
+               "iterations,converged,success,avg_value\n";
     }
 
     double sum = 0.0;
@@ -206,7 +212,7 @@ void append_runtime_csv(
         << graph.total_transitions() << ',' << algorithm << ','
         << std::fixed << std::setprecision(6) << runtime_ms << ','
         << iterations << ',' << (converged ? 1 : 0) << ','
-        << format_value(avg) << ',' << (success ? 1 : 0) << '\n';
+        << (success ? 1 : 0) << ',' << format_value(avg) << '\n';
 }
 
 }  // namespace rsp

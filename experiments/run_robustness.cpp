@@ -30,6 +30,8 @@ struct RobustnessRow {
     int successor_set_size = 0;
     std::string policy_type;
     int start_node = 0;
+    bool policy_valid = false;
+    std::string invalid_reason;
     double worst_cost = rsp::INF;
     bool terminated = false;
     int steps = 0;
@@ -37,6 +39,7 @@ struct RobustnessRow {
 
 struct Summary {
     int cases = 0;
+    int valid_count = 0;
     int terminated_count = 0;
     double terminated_cost_sum = 0.0;
     int terminated_cost_count = 0;
@@ -128,12 +131,40 @@ bool valid_rollout_policy(const rsp::RobustGraph& graph, const rsp::AlgorithmRun
     return rsp::check_policy_proper(graph, run.policy).proper;
 }
 
+std::string invalid_reason_for_run(
+    const rsp::RobustGraph& graph,
+    const rsp::AlgorithmRunResult& run
+) {
+    if (!run.success) {
+        return "algorithm_not_successful";
+    }
+    if (!run.converged) {
+        return "algorithm_not_converged";
+    }
+    if (static_cast<int>(run.policy.size()) != graph.n) {
+        return "policy_size_mismatch";
+    }
+    if (!rsp::check_policy_proper(graph, run.policy).proper) {
+        return "policy_not_proper";
+    }
+    if (static_cast<int>(run.value.size()) != graph.n) {
+        return "value_size_mismatch";
+    }
+    for (int x = 0; x < graph.n; ++x) {
+        if (!graph.is_terminal(x) && rsp::is_inf(run.value[x])) {
+            return "value_not_finite";
+        }
+    }
+    return "";
+}
+
 double safe_average(double sum, int count) {
     return count == 0 ? rsp::INF : sum / count;
 }
 
 void write_raw_header(std::ofstream& out) {
-    out << "graph_id,s,policy_type,start_node,worst_cost,terminated,steps\n";
+    out << "graph_id,s,policy_type,start_node,policy_valid,invalid_reason,"
+           "worst_cost,terminated,steps\n";
 }
 
 void write_raw_row(std::ofstream& out, const RobustnessRow& row) {
@@ -141,6 +172,8 @@ void write_raw_row(std::ofstream& out, const RobustnessRow& row) {
         << row.successor_set_size << ','
         << row.policy_type << ','
         << row.start_node << ','
+        << (row.policy_valid ? 1 : 0) << ','
+        << row.invalid_reason << ','
         << rsp::format_value(row.worst_cost) << ','
         << (row.terminated ? 1 : 0) << ','
         << row.steps << '\n';
@@ -148,6 +181,10 @@ void write_raw_row(std::ofstream& out, const RobustnessRow& row) {
 
 void update_summary(Summary& summary, const RobustnessRow& row) {
     ++summary.cases;
+    if (!row.policy_valid) {
+        return;
+    }
+    ++summary.valid_count;
     if (!row.terminated) {
         return;
     }
@@ -167,11 +204,15 @@ void write_summary(
     if (!out) {
         throw std::runtime_error("failed to open robustness summary csv");
     }
-    out << "s,policy_type,cases,terminated_count,terminated_rate,avg_worst_cost,avg_steps\n";
+    out << "s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,"
+           "avg_worst_cost,avg_steps\n";
     for (const auto& item : summaries) {
         const int successor_set_size = item.first.first;
         const std::string& policy_type = item.first.second;
         const Summary& summary = item.second;
+        const double valid_rate = summary.cases == 0
+            ? 0.0
+            : static_cast<double>(summary.valid_count) / summary.cases;
         const double terminated_rate = summary.cases == 0
             ? 0.0
             : static_cast<double>(summary.terminated_count) / summary.cases;
@@ -183,6 +224,8 @@ void write_summary(
         out << successor_set_size << ','
             << policy_type << ','
             << summary.cases << ','
+            << summary.valid_count << ','
+            << rsp::format_value(valid_rate) << ','
             << summary.terminated_count << ','
             << rsp::format_value(terminated_rate) << ','
             << rsp::format_value(avg_worst_cost) << ','
@@ -206,7 +249,9 @@ RobustnessRow run_one_algorithm(
 
     try {
         const auto run = rsp::run_algorithm(graph, algorithm);
-        if (!valid_rollout_policy(graph, run)) {
+        row.invalid_reason = invalid_reason_for_run(graph, run);
+        row.policy_valid = row.invalid_reason.empty();
+        if (!row.policy_valid) {
             return row;
         }
 
@@ -215,7 +260,11 @@ RobustnessRow run_one_algorithm(
         row.worst_cost = rollout.cost;
         row.terminated = rollout.terminated;
         row.steps = rollout.steps;
+        if (!row.terminated) {
+            row.invalid_reason = "rollout_timeout";
+        }
     } catch (const std::exception& e) {
+        row.invalid_reason = "algorithm_exception";
         std::cerr << "algorithm failed: graph=" << graph_id
                   << " algorithm=" << algorithm
                   << " error=" << e.what() << '\n';
@@ -230,6 +279,9 @@ int main(int argc, char** argv) {
     try {
         const Args args = parse_args(argc, argv);
         const auto files = list_graph_files(args);
+        if (!args.input_dir.empty() && args.successor_set_size >= 0) {
+            throw std::invalid_argument("--s cannot be used together with --input-dir");
+        }
         std::filesystem::create_directories(args.output);
         const std::string raw_path = args.output + "/robustness.csv";
         const std::string summary_path = args.output + "/robustness_summary.csv";

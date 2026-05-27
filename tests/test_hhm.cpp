@@ -70,6 +70,20 @@ rsp::RobustGraph make_mode_separation_graph() {
     return graph;
 }
 
+rsp::RobustGraph make_rollout_tie_graph() {
+    rsp::RobustGraph graph;
+    graph.n = 4;
+    graph.terminal = 3;
+    graph.nodes.resize(graph.n);
+    for (int i = 0; i < graph.n; ++i) {
+        graph.nodes[i].id = i;
+    }
+    graph.nodes[0].actions.push_back({0, "", {{2, 1.0}, {1, 1.0}}});
+    graph.nodes[1].actions.push_back({0, "", {{3, 0.0}}});
+    graph.nodes[2].actions.push_back({0, "", {{3, 0.0}}});
+    return graph;
+}
+
 void test_toy_dijkstra_like() {
     const rsp::RobustGraph graph = rsp::read_graph_txt("data/toy_graph.txt");
     const auto result = rsp::dijkstra_like(graph);
@@ -183,6 +197,18 @@ void test_rollout_rejects_mismatched_sizes() {
     assert(bad_value_rollout.path.empty());
 }
 
+void test_rollout_tie_breaks_by_smallest_successor_id() {
+    const rsp::RobustGraph graph = make_rollout_tie_graph();
+    const std::vector<int> policy = {0, 0, 0, -1};
+    const std::vector<double> value = {0.0, 0.0, 0.0, 0.0};
+    const auto rollout = rsp::adversarial_rollout(graph, policy, value, 0, 10);
+    assert(rollout.terminated);
+    assert(rollout.path.size() == 3);
+    assert(rollout.path[0] == 0);
+    assert(rollout.path[1] == 1);
+    assert(rollout.path[2] == 3);
+}
+
 }  // namespace
 
 int main() {
@@ -193,5 +219,6 @@ int main() {
     test_baseline_modes_can_choose_different_actions();
     test_baseline_plans_over_full_deterministic_distance();
     test_rollout_rejects_mismatched_sizes();
+    test_rollout_tie_breaks_by_smallest_successor_id();
     return 0;
 }

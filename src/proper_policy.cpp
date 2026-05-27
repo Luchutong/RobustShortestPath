@@ -63,6 +63,9 @@ PolicyCheckResult check_policy_proper(
     }
 
     PolicyCheckResult result;
+    if (policy[graph.terminal] != -1) {
+        return result;
+    }
     std::vector<std::vector<int>> adj(graph.n);
     std::vector<std::vector<int>> rev(graph.n);
     std::vector<int> indeg(graph.n, 0);
@@ -151,4 +154,3 @@ std::vector<double> evaluate_proper_policy_dag(
 }
 
 }  // namespace rsp
-

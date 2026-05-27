@@ -79,8 +79,8 @@ AlgorithmRunResult run_algorithm(
     if (algorithm_name == "exhaustive") {
         auto result = exhaustive_search(graph);
         out.kind = AlgorithmKind::Baseline;
-        out.value = std::move(result.value);
-        out.policy = std::move(result.policy);
+        out.value = std::move(result.optimal_value_by_state);
+        out.policy = std::move(result.best_policy_for_start);
         out.iterations = result.checked_policies;
         out.converged = result.success;
         out.success = result.success;

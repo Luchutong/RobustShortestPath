@@ -43,8 +43,7 @@ int main() {
 
     auto exhaustive = rsp::exhaustive_search(graph);
     assert(exhaustive.success);
-    check_toy_values(exhaustive.value);
+    check_toy_values(exhaustive.optimal_value_by_state);
 
     return 0;
 }
-

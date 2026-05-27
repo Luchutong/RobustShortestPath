@@ -1,6 +1,7 @@
 #include "rsp/exhaustive_search.hpp"
 #include "rsp/io.hpp"
 #include "rsp/policy_iteration.hpp"
+#include "rsp/proper_policy.hpp"
 #include "rsp/runner.hpp"
 #include "rsp/value_iteration.hpp"
 
@@ -91,8 +92,8 @@ void test_toy_vi_matches_exhaustive() {
 
     assert(vi.converged);
     assert(exhaustive.success);
-    expect_vectors_close(vi.value, exhaustive.value);
-    assert(vi.policy[0] == exhaustive.policy[0]);
+    expect_vectors_close(vi.value, exhaustive.optimal_value_by_state);
+    assert(vi.policy[0] == exhaustive.best_policy_for_start[0]);
 }
 
 void test_small_layered_vi_matches_exhaustive() {
@@ -102,12 +103,23 @@ void test_small_layered_vi_matches_exhaustive() {
 
     assert(vi.converged);
     assert(exhaustive.success);
-    expect_vectors_close(vi.value, exhaustive.value);
+    expect_vectors_close(vi.value, exhaustive.optimal_value_by_state);
     assert(vi.policy[0] == 1);
     expect_close(vi.value[0], 3.0);
     expect_close(vi.value[1], 3.0);
     expect_close(vi.value[2], 1.0);
     expect_close(vi.value[3], 0.0);
+}
+
+void test_runner_exhaustive_uses_start_optimal_policy_and_statewise_values() {
+    const rsp::RobustGraph graph = make_small_layered_graph();
+    const auto exhaustive = rsp::exhaustive_search(graph);
+    const auto run = rsp::run_algorithm(graph, "exhaustive");
+
+    assert(exhaustive.success);
+    assert(run.success);
+    expect_vectors_close(run.value, exhaustive.optimal_value_by_state);
+    assert(run.policy == exhaustive.best_policy_for_start);
 }
 
 void test_value_iteration_reports_not_converged() {
@@ -185,6 +197,30 @@ void test_negative_action_count_rejected() {
     std::remove(path.c_str());
 }
 
+void test_negative_node_count_rejected_before_resize() {
+    const std::string path = write_temp_graph_file("-1 0\n", "negative_node_count");
+    bool threw = false;
+    try {
+        (void)rsp::read_graph_txt(path);
+    } catch (const std::runtime_error&) {
+        threw = true;
+    }
+    assert(threw);
+    std::remove(path.c_str());
+}
+
+void test_terminal_index_rejected_before_resize() {
+    const std::string path = write_temp_graph_file("2 2\n0\n0\n", "bad_terminal_index");
+    bool threw = false;
+    try {
+        (void)rsp::read_graph_txt(path);
+    } catch (const std::runtime_error&) {
+        threw = true;
+    }
+    assert(threw);
+    std::remove(path.c_str());
+}
+
 void test_negative_successor_count_rejected() {
     const std::string path = write_temp_graph_file("2 1\n1\n0 -1\n0\n", "negative_successor_count");
     bool threw = false;
@@ -197,17 +233,22 @@ void test_negative_successor_count_rejected() {
     std::remove(path.c_str());
 }
 
+void test_terminal_policy_must_be_minus_one() {
+    const rsp::RobustGraph graph = rsp::read_graph_txt("data/toy_graph.txt");
+    std::vector<int> policy = {1, 0, 0, 0, 0, 0};
+    const auto check = rsp::check_policy_proper(graph, policy);
+    assert(!check.proper);
+}
+
 void test_generator_uses_distinct_filenames() {
     const std::string out_dir = "/tmp/rsp_generator_unique_names";
     const std::string cleanup = "rm -rf " + out_dir;
     std::system(cleanup.c_str());
 
     const std::string cmd1 =
-        "cd /home/luchitong/算法实验/RobustShortestPath && "
         "python3 experiments/generate_medium_graphs.py --output " + out_dir +
         " --sizes 20 --cases 2 --actions 3 --successors 1 --seed 42";
     const std::string cmd2 =
-        "cd /home/luchitong/算法实验/RobustShortestPath && "
         "python3 experiments/generate_medium_graphs.py --output " + out_dir +
         " --sizes 20 --cases 2 --actions 3 --successors 5 --seed 42";
 
@@ -242,7 +283,6 @@ void test_generator_avoids_duplicate_successors() {
     std::system(cleanup.c_str());
 
     const std::string cmd =
-        "cd /home/luchitong/算法实验/RobustShortestPath && "
         "python3 experiments/generate_medium_graphs.py --output " + out_dir +
         " --sizes 20 --cases 1 --actions 3 --successors 5 --seed 42";
     assert(std::system(cmd.c_str()) == 0);
@@ -285,19 +325,35 @@ void test_generator_avoids_duplicate_successors() {
     std::system(cleanup.c_str());
 }
 
+void test_run_robustness_rejects_mixed_input_dir_with_override_s() {
+    const std::string out_dir = "/tmp/rsp_robustness_override_out";
+    const std::string cmd =
+        "cd /home/luchitong/算法实验/RobustShortestPath && "
+        "./build/run_robustness --input-dir "
+        "experiment_data/official_20260521_210335/exp4_robustness/graphs "
+        "--output " + out_dir + " --start 0 --max-steps 1000 --s 3";
+    assert(std::system(cmd.c_str()) != 0);
+    std::system(("rm -rf " + out_dir).c_str());
+}
+
 }  // namespace
 
 int main() {
     test_toy_vi_matches_exhaustive();
     test_small_layered_vi_matches_exhaustive();
+    test_runner_exhaustive_uses_start_optimal_policy_and_statewise_values();
     test_value_iteration_reports_not_converged();
     test_runner_vi_success_requires_convergence();
     test_runner_vi_rejects_no_proper_policy_graph();
     test_runner_pi_requires_convergence();
     test_terminal_actions_are_rejected();
     test_negative_action_count_rejected();
+    test_negative_node_count_rejected_before_resize();
+    test_terminal_index_rejected_before_resize();
     test_negative_successor_count_rejected();
+    test_terminal_policy_must_be_minus_one();
     test_generator_uses_distinct_filenames();
     test_generator_avoids_duplicate_successors();
+    test_run_robustness_rejects_mixed_input_dir_with_override_s();
     return 0;
 }

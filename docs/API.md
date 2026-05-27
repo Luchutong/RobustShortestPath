@@ -111,6 +111,8 @@ struct ValueIterationResult {
     std::vector<int> policy;
     int iterations;
     bool converged;
+    bool final_policy_proper;
+    bool all_values_finite;
     std::vector<double> residual_history;
     std::vector<std::vector<double>> value_history;
 };
@@ -129,6 +131,8 @@ ValueIterationResult value_iteration(
 - `init_with_inf=true` 用于主实验效率比较。
 - `init_with_inf=false` 用于画收敛曲线。
 - `policy` 是最终 value 上提取出的 greedy policy，使用前建议调用 `check_policy_proper`.
+- `converged` 只表示数值 residual 达到停止条件，不保证得到合法解。
+- 只有 `converged && final_policy_proper && all_values_finite` 才应视为 VI 成功。
 
 ## 5. Proper Policy
 
@@ -165,6 +169,7 @@ std::vector<double> evaluate_proper_policy_dag(
 
 - `find_initial_proper_policy` 使用 reachability 思想构造初始 proper policy。
 - `check_policy_proper` 要同时检查非终点环和是否都能到达 terminal。
+- `check_policy_proper` 还要求 `policy[terminal] == -1`。
 - `evaluate_proper_policy_dag` 只接受 proper policy，否则抛异常。
 
 ## 6. Policy Iteration
@@ -225,8 +230,8 @@ DijkstraLikeResult dijkstra_like(const RobustGraph& graph);
 
 ```cpp
 struct ExhaustiveSearchResult {
-    std::vector<double> value;
-    std::vector<int> policy;
+    std::vector<double> optimal_value_by_state;
+    std::vector<int> best_policy_for_start;
     bool success;
     int checked_policies;
     int proper_policies;
@@ -238,7 +243,8 @@ ExhaustiveSearchResult exhaustive_search(const RobustGraph& graph);
 用途：
 
 - 只用于小规模图正确性验证。
-- `value[x]` 表示所有 proper policies 中对应节点的最小 worst-case cost。
+- `optimal_value_by_state[x]` 表示所有 proper policies 中对应节点的最小 worst-case cost。
+- `best_policy_for_start` 只保证对起点状态 `0` 最优，不保证与整条 `optimal_value_by_state` 来自同一个 policy。
 
 ## 9. Baseline 与 Rollout
 
@@ -286,6 +292,8 @@ RolloutResult adversarial_rollout(
 - deterministic baseline 使用 Dijkstra-style shortest-path planning，因此同样要求非负转移代价；发现负代价时返回 `success=false`。
 - 如果得到的 deterministic policy 不是 proper，则 `success=false`。
 - `adversarial_rollout` 每步选择 `argmax_y [g + J(y)]`.
+- 如果多个 successor 的 worst-case score 相同，`adversarial_rollout` 按较小 successor id 做 tie-breaking。
+- `adversarial_rollout` 要求 `policy.size() == graph.n`、`J.size() == graph.n` 且 `start` 合法，否则返回未终止结果。
 
 ## 10. IO
 
@@ -385,5 +393,5 @@ AlgorithmRunResult run_algorithm(
 - robust policy：优先用 `vi`
 - deterministic policy：`baseline_nominal`, `baseline_bestcase`, `baseline_worst_immediate`
 - 评估接口：`adversarial_rollout`
-- 单次输出：`graph_id,s,policy_type,start_node,worst_cost,terminated,steps`
-- 批量汇总输出：`s,policy_type,cases,terminated_count,terminated_rate,avg_worst_cost,avg_steps`
+- 单次输出：`graph_id,s,policy_type,start_node,policy_valid,invalid_reason,worst_cost,terminated,steps`
+- 批量汇总输出：`s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,avg_worst_cost,avg_steps`

@@ -87,6 +87,8 @@ def load_robustness(path: str, graph_id: str | None = None) -> List[dict]:
             continue
         row["s"] = int(row["s"])
         row["start_node"] = int(row["start_node"])
+        row["policy_valid"] = int(row.get("policy_valid", "1"))
+        row["invalid_reason"] = row.get("invalid_reason", "")
         row["worst_cost"] = parse_float(row["worst_cost"])
         row["terminated"] = int(row["terminated"])
         row["steps"] = int(row["steps"])
@@ -99,6 +101,8 @@ def load_robustness_summary(path: str) -> List[dict]:
     for row in rows:
         row["s"] = int(row["s"])
         row["cases"] = int(row["cases"])
+        row["valid_count"] = int(row.get("valid_count", row["cases"]))
+        row["valid_rate"] = float(row.get("valid_rate", "1.0"))
         row["terminated_count"] = int(row["terminated_count"])
         row["terminated_rate"] = float(row["terminated_rate"])
         row["avg_worst_cost"] = parse_float(row["avg_worst_cost"])
@@ -541,4 +545,3 @@ def draw_line_chart(
         canvas.line(legend_x, y_pos, legend_x + 14.0, y_pos, stroke=item["color"], stroke_width=3.0)
         canvas.text(legend_x + 20.0, y_pos + 4.0, item["name"], size=10, anchor="start")
     canvas.text(frame[0] + 18.0, (top + bottom) / 2.0, y_label, size=11, anchor="middle", fill="#475569")
-

@@ -180,7 +180,8 @@ RolloutResult adversarial_rollout(
         for (const auto& tr : graph.nodes[x].actions[a].trans) {
             const double next_value = graph.is_terminal(tr.to) ? 0.0 : J[tr.to];
             const double score = safe_add(tr.cost, next_value);
-            if (score > worst) {
+            if (score > worst + EPS ||
+                (std::abs(score - worst) <= EPS && (chosen.to < 0 || tr.to < chosen.to))) {
                 worst = score;
                 chosen = tr;
             }

@@ -90,8 +90,8 @@ toy_graph,vi,1,inf
 `runtime.csv`
 
 ```csv
-graph_id,n,total_actions,total_transitions,algorithm,runtime_ms,iterations,converged,avg_value,success
-toy_graph,6,6,7,vi,0.052000,4,1,42.600000,1
+graph_id,n,total_actions,total_transitions,algorithm,runtime_ms,iterations,converged,success,avg_value
+toy_graph,6,6,7,vi,0.052000,4,1,1,42.600000
 ```
 
 `runtime_experiment.csv`
@@ -111,17 +111,17 @@ n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_v
 `robustness.csv`
 
 ```csv
-graph_id,s,policy_type,start_node,worst_cost,terminated,steps
-toy_graph,2,baseline_nominal,0,102.000000,1,3
-toy_graph,2,vi,0,7.000000,1,2
+graph_id,s,policy_type,start_node,policy_valid,invalid_reason,worst_cost,terminated,steps
+toy_graph,2,baseline_nominal,0,1,,102.000000,1,3
+toy_graph,2,vi,0,1,,7.000000,1,2
 ```
 
 `robustness_summary.csv`
 
 ```csv
-s,policy_type,cases,terminated_count,terminated_rate,avg_worst_cost,avg_steps
-2,baseline_nominal,20,20,1.000000,57.428797,5.000000
-2,vi,20,20,1.000000,40.032566,4.450000
+s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,avg_worst_cost,avg_steps
+2,baseline_nominal,20,20,1.000000,20,1.000000,57.428797,5.000000
+2,vi,20,20,1.000000,20,1.000000,40.032566,4.450000
 ```
 
 ## 命令行接口
@@ -156,7 +156,7 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 --s 2
 ```
 
-如果不传 `--s`，程序默认用图中最大 successor set size 作为 `s`。
+如果不传 `--s`，程序默认用图中最大 successor set size 作为 `s`。目录模式下不允许再传 `--s` 覆盖整批图的标记。
 
 算法名统一使用：
 
