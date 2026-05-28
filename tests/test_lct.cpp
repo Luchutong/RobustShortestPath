@@ -406,6 +406,8 @@ void test_generator_writes_metadata_csv() {
         ++rows;
     }
     CHECK(rows == 2);
+    std::ifstream run_specific_in(out_dir + "/graph_metadata_s5.csv");
+    CHECK(static_cast<bool>(run_specific_in));
     CHECK(std::system(cleanup.c_str()) == 0);
 }
 
@@ -467,6 +469,63 @@ void test_generator_rejects_duplicate_sizes_and_successor_values() {
     CHECK(std::system(dup_sizes_cmd.c_str()) != 0);
     CHECK(std::system(dup_s_values_cmd.c_str()) != 0);
     CHECK(std::system(cleanup.c_str()) == 0);
+}
+
+void test_plot_comparison_rejects_missing_robustness_rows() {
+    const std::string out_svg = "/tmp/rsp_plot_missing_robustness.svg";
+    const std::string err_path = "/tmp/rsp_plot_missing_robustness.err";
+    const std::string cmd =
+        "python3 visualization/plot_comparison.py "
+        "--runtime-summary-csv experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv "
+        "--robustness-csv experiment_data/official_20260521_210335/exp4_robustness/results/robustness.csv "
+        "--graph-id does_not_exist "
+        "--output " + shell_quote(out_svg) + " "
+        "2> " + shell_quote(err_path);
+    CHECK(std::system(cmd.c_str()) != 0);
+    CHECK(read_text_file(err_path).find("no robustness rows found") != std::string::npos);
+    std::remove(err_path.c_str());
+    std::remove(out_svg.c_str());
+}
+
+void test_plot_comparison_rejects_ambiguous_runtime_summary() {
+    const std::string path = "/tmp/rsp_ambiguous_runtime_summary.csv";
+    {
+        std::ofstream out(path);
+        CHECK(static_cast<bool>(out));
+        out << "n,requested_s,actions,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_value\n";
+        out << "50,1,3,vi,1,1,1.0,0.1,5,10\n";
+        out << "50,2,3,vi,1,1,1.0,0.2,5,12\n";
+    }
+    const std::string out_svg = "/tmp/rsp_ambiguous_runtime_summary.svg";
+    const std::string err_path = "/tmp/rsp_ambiguous_runtime_summary.err";
+    const std::string cmd =
+        "python3 visualization/plot_comparison.py "
+        "--runtime-summary-csv " + shell_quote(path) + " "
+        "--output " + shell_quote(out_svg) + " "
+        "2> " + shell_quote(err_path);
+    CHECK(std::system(cmd.c_str()) != 0);
+    CHECK(read_text_file(err_path).find("multiple rows for the same (n, algorithm)") != std::string::npos);
+    std::remove(path.c_str());
+    std::remove(err_path.c_str());
+    std::remove(out_svg.c_str());
+}
+
+void test_toy_json_matches_txt() {
+    const rsp::RobustGraph graph = rsp::read_graph_txt("data/toy_graph.txt");
+    std::ifstream in("data/toy_graph.json");
+    CHECK(static_cast<bool>(in));
+    std::string json(
+        std::istreambuf_iterator<char>(in),
+        std::istreambuf_iterator<char>());
+    CHECK(json.find("\"n\": 6") != std::string::npos);
+    CHECK(json.find("\"terminal\": 5") != std::string::npos);
+    CHECK(json.find("\"to\": 1") != std::string::npos);
+    CHECK(json.find("\"to\": 2") != std::string::npos);
+    CHECK(json.find("\"to\": 3") != std::string::npos);
+    CHECK(json.find("\"to\": 4") != std::string::npos);
+    CHECK(json.find("\"to\": 5") != std::string::npos);
+    CHECK(graph.n == 6);
+    CHECK(graph.terminal == 5);
 }
 
 void test_rsp_main_rejects_trailing_cli_garbage() {

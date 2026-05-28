@@ -65,6 +65,8 @@ def robustness_series(rows: list[dict], graph_id: str | None) -> tuple[list[str]
 
 
 def robustness_summary_series(rows: list[dict]) -> tuple[list[int], list[dict]]:
+    if not rows:
+        raise ValueError("robustness summary is empty")
     s_values = sorted({row["s"] for row in rows})
     series = []
     for index, algorithm in enumerate(ROBUSTNESS_ORDER):
@@ -117,26 +119,24 @@ def main() -> None:
     elif args.robustness_csv:
         robustness_rows = load_robustness(args.robustness_csv, args.graph_id)
         labels, series = robustness_series(robustness_rows, args.graph_id)
-        if labels:
-            colored_series = [
-                {
-                    "name": label,
-                    "color": PALETTE[index % len(PALETTE)],
-                    "values": [values],
-                }
-                for index, (label, values) in enumerate(zip(labels, series[0]["values"]))
-            ]
-            draw_grouped_bar_chart(
-                canvas,
-                (615.0, 440.0, 555.0, 350.0),
-                title="Adversarial Worst-case Cost",
-                x_labels=[args.graph_id or "graph"],
-                series=colored_series,
-                y_label="worst_cost",
-            )
-        else:
-            _, avg_value_series = metric_series(runtime_rows, "avg_value")
-            draw_line_chart(canvas, (615.0, 440.0, 555.0, 350.0), title="Average Value", x_values=sizes, series=avg_value_series, y_label="avg_value")
+        if not labels:
+            raise ValueError("no robustness rows found for the requested graph/policies")
+        colored_series = [
+            {
+                "name": label,
+                "color": PALETTE[index % len(PALETTE)],
+                "values": [values],
+            }
+            for index, (label, values) in enumerate(zip(labels, series[0]["values"]))
+        ]
+        draw_grouped_bar_chart(
+            canvas,
+            (615.0, 440.0, 555.0, 350.0),
+            title="Adversarial Worst-case Cost",
+            x_labels=[args.graph_id or "graph"],
+            series=colored_series,
+            y_label="worst_cost",
+        )
     else:
         _, avg_value_series = metric_series(runtime_rows, "avg_value")
         draw_line_chart(canvas, (615.0, 440.0, 555.0, 350.0), title="Average Value", x_values=sizes, series=avg_value_series, y_label="avg_value")

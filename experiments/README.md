@@ -83,6 +83,8 @@ graph_id,n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s
 graph_metadata_s1_2_5.csv
 ```
 
+`graph_metadata.csv` 代表本次最新 generator 运行的合并 metadata；若多次向同一目录生成图，旧的 `graph_metadata.csv` 会被覆盖。若需要保留每次运行的独立归档，请使用 `graph_metadata_s*.csv`。
+
 并且当前 generator 会拒绝重复的 `--sizes` 或重复的 `--successors-values`，避免图文件与 metadata 行被静默覆盖。
 
 实验 4 当前命令：

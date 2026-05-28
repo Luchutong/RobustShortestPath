@@ -64,6 +64,8 @@ python3 visualization/plot_comparison.py \
 
 - runtime 过滤后没有剩余数据；
 - 同一 `(n, algorithm)` 在输入 summary 中出现多条记录；
+- 传入 `--robustness-csv` 但找不到目标 graph/policy；
+- 传入的 `robustness_summary.csv` 为空；
 
 因此当 summary 同时包含多个 `requested_s` 或 action 配置时，应显式传入 `--requested-s` 和 `--actions` 选定单一切片。
 

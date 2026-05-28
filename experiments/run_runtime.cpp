@@ -27,6 +27,22 @@ int parse_int_strict(const std::string& text, const std::string& name) {
     return value;
 }
 
+int infer_uniform_actions_per_nonterminal(const rsp::RobustGraph& graph) {
+    int expected = -1;
+    for (int x = 0; x < graph.n; ++x) {
+        if (graph.is_terminal(x)) {
+            continue;
+        }
+        const int count = static_cast<int>(graph.nodes[x].actions.size());
+        if (expected < 0) {
+            expected = count;
+        } else if (expected != count) {
+            return -1;
+        }
+    }
+    return expected;
+}
+
 double parse_double_strict(const std::string& text, const std::string& name) {
     std::size_t pos = 0;
     double value = std::stod(text, &pos);
@@ -307,6 +323,13 @@ int main(int argc, char** argv) {
             int requested_s = 0;
             int actions_parsed = 0;
             parse_graph_params(graph_id, requested_s, actions_parsed);
+            const int inferred_actions = infer_uniform_actions_per_nonterminal(graph);
+            if (actions_parsed != -1 &&
+                inferred_actions != -1 &&
+                actions_parsed != inferred_actions) {
+                throw std::runtime_error(
+                    "filename actions label does not match graph structure: " + graph_id);
+            }
             for (const auto& algorithm : algorithms) {
                 const RunRow row = run_one_algorithm(graph, graph_id, algorithm, options);
                 write_raw_row(raw, row);
