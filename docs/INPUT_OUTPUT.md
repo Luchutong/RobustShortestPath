@@ -113,6 +113,8 @@ n,requested_s,actions,algorithm,cases,success_count,success_rate,avg_runtime_ms,
 
 - `avg_runtime_ms` 对所有运行样本求平均。
 - `avg_iterations` 与 `avg_value` 只对成功运行样本求平均。
+- `requested_s` 与 `actions` 从文件名解析；若文件名不符合当前 generator 命名规范，则为 `-1`（not available from filename）。
+- runtime_summary.csv 假定输入目录在 `requested_s` 与 `actions` 上同质；若混入异质图，分组粒度请以 raw runtime_experiment.csv 为准。
 
 `graph_metadata.csv`
 
@@ -142,6 +144,7 @@ s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,avg_
 - `valid_rate = valid_count / cases`
 - `terminated_rate = terminated_count / cases`
 - `avg_worst_cost` 与 `avg_steps` 只对 `policy_valid=true` 且 `terminated=true` 的样本求平均。
+- `robustness_summary.csv` 假定输入目录在 `n` 与 action 数量上同质；summary 只按 `s + policy_type` 聚合，若目录内混有不同 `n` 或 action 设置的图，请直接使用 raw `robustness.csv`。
 
 ## 命令行接口
 

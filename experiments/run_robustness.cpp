@@ -17,6 +17,15 @@
 
 namespace {
 
+int parse_int_strict(const std::string& text, const std::string& name) {
+    std::size_t pos = 0;
+    int value = std::stoi(text, &pos);
+    if (pos != text.size()) {
+        throw std::invalid_argument("invalid integer for " + name + ": " + text);
+    }
+    return value;
+}
+
 struct Args {
     std::string input;
     std::string input_dir;
@@ -66,11 +75,11 @@ Args parse_args(int argc, char** argv) {
         } else if (key == "--output") {
             args.output = require_value(key);
         } else if (key == "--start") {
-            args.start = std::stoi(require_value(key));
+            args.start = parse_int_strict(require_value(key), key);
         } else if (key == "--max-steps") {
-            args.max_steps = std::stoi(require_value(key));
+            args.max_steps = parse_int_strict(require_value(key), key);
         } else if (key == "--s") {
-            args.successor_set_size = std::stoi(require_value(key));
+            args.successor_set_size = parse_int_strict(require_value(key), key);
             args.has_successor_set_size = true;
         } else if (key == "--help") {
             std::cout

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
 import random
 from pathlib import Path
 
@@ -128,8 +129,15 @@ def main() -> None:
     args = parse_args()
     if args.actions <= 0:
         raise ValueError("--actions must be positive")
-    if args.min_cost < 0 or args.max_cost < args.min_cost:
-        raise ValueError("cost range must be non-negative and ordered")
+    if args.cases <= 0:
+        raise ValueError("--cases must be positive")
+    if (
+        not math.isfinite(args.min_cost)
+        or not math.isfinite(args.max_cost)
+        or args.min_cost < 0
+        or args.max_cost < args.min_cost
+    ):
+        raise ValueError("cost range must be finite, non-negative, and ordered")
     for n in args.sizes:
         if n < 3:
             raise ValueError("all graph sizes must be at least 3")

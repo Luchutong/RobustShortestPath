@@ -409,6 +409,47 @@ void test_generator_writes_metadata_csv() {
     CHECK(std::system(cleanup.c_str()) == 0);
 }
 
+void test_generator_successors_values_mode() {
+    const std::string out_dir = "/tmp/rsp_generator_successors_values";
+    const std::string cleanup = "rm -rf " + out_dir;
+    CHECK(std::system(cleanup.c_str()) == 0);
+
+    const std::string cmd =
+        "python3 experiments/generate_medium_graphs.py --output " + out_dir +
+        " --sizes 20 --cases 2 --actions 3 --successors-values 1 2 5 --seed 42";
+    CHECK(std::system(cmd.c_str()) == 0);
+
+    std::vector<std::string> txt_files;
+    for (const auto& entry : std::filesystem::directory_iterator(out_dir)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".txt") {
+            txt_files.push_back(entry.path().filename().string());
+        }
+    }
+    CHECK(txt_files.size() == 6);
+
+    std::ifstream meta_in(out_dir + "/graph_metadata.csv");
+    CHECK(static_cast<bool>(meta_in));
+    std::string line;
+    std::getline(meta_in, line);
+    int meta_rows = 0;
+    std::set<int> requested_s_values;
+    while (std::getline(meta_in, line)) {
+        CHECK(!line.empty());
+        ++meta_rows;
+        std::size_t pos = 0;
+        for (int i = 0; i < 7; ++i) {
+            pos = line.find(',', pos + 1);
+        }
+        const std::size_t next = line.find(',', pos + 1);
+        const std::string s_field = line.substr(
+            pos + 1, next == std::string::npos ? std::string::npos : next - pos - 1);
+        requested_s_values.insert(std::stoi(s_field));
+    }
+    CHECK(meta_rows == 6);
+    CHECK(requested_s_values == std::set<int>({1, 2, 5}));
+    CHECK(std::system(cleanup.c_str()) == 0);
+}
+
 void test_run_robustness_rejects_mixed_input_dir_with_override_s() {
     const std::string out_dir = "/tmp/rsp_robustness_override_out";
     const std::string err_path = "/tmp/rsp_robustness_override_out.err";
@@ -579,6 +620,7 @@ int main() {
     test_generator_uses_distinct_filenames();
     test_generator_avoids_duplicate_successors();
     test_generator_writes_metadata_csv();
+    test_generator_successors_values_mode();
     test_run_robustness_rejects_mixed_input_dir_with_override_s();
     test_run_robustness_rejects_negative_max_steps();
     test_run_runtime_rejects_nonpositive_epsilon();

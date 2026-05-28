@@ -28,7 +28,7 @@ jobs:
             --sizes 20 \
             --cases 2 \
             --actions 3 \
-            --successors 5 \
+            --successors-values 1 2 5 \
             --seed 42
           test -f /tmp/rsp-ci-graphs/graph_metadata.csv
       - name: Runtime Smoke Test
@@ -68,6 +68,8 @@ jobs:
           python3 visualization/plot_comparison.py \
             --runtime-summary-csv /tmp/rsp-ci-runtime/runtime_summary.csv \
             --robustness-summary-csv /tmp/rsp-ci-robustness/robustness_summary.csv \
+            --requested-s 5 \
+            --actions 3 \
             --output /tmp/rsp-ci-viz/comparison.svg
           test -f /tmp/rsp-ci-viz/comparison.svg
 

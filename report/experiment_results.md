@@ -70,7 +70,7 @@ toy graph 的核心结论如下：
 
 ![runtime_comparison](figures/runtime_comparison.svg)
 
-根据 [experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv](../experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv) 中的正式数据，可以整理出如下结果：
+根据 [experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv](../experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv) 中的正式数据，可以整理出如下结果（下表省略了 `requested_s` 与 `actions` 两列；当前 generator 生成的新数据会在 `runtime_summary.csv` 中保留这些分组字段）：
 
 | n | algorithm | success_rate | avg_runtime_ms | avg_iterations | avg_value |
 | --- | --- | ---: | ---: | ---: | ---: |

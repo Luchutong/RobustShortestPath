@@ -16,6 +16,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--robustness-csv", help="Optional path to robustness.csv.")
     parser.add_argument("--robustness-summary-csv", help="Optional path to robustness_summary.csv.")
     parser.add_argument("--graph-id", help="Graph id for robustness plot.")
+    parser.add_argument("--requested-s", type=int, help="Filter runtime rows by requested_s.")
+    parser.add_argument("--actions", type=int, help="Filter runtime rows by actions.")
     parser.add_argument("--output", required=True, help="Path to output figure.")
     return parser.parse_args()
 
@@ -72,6 +74,12 @@ def robustness_summary_series(rows: list[dict]) -> tuple[list[int], list[dict]]:
 def main() -> None:
     args = parse_args()
     runtime_rows = load_runtime_summary(args.runtime_summary_csv)
+
+    if args.requested_s is not None:
+        runtime_rows = [r for r in runtime_rows if int(r.get("requested_s", 0)) == args.requested_s]
+    if args.actions is not None:
+        runtime_rows = [r for r in runtime_rows if int(r.get("actions", 0)) == args.actions]
+
     canvas = SVGCanvas(1200, 860)
     canvas.text(600.0, 32.0, "Runtime and Correctness Comparison", size=24, weight="bold")
 
