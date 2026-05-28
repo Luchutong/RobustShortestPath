@@ -447,7 +447,40 @@ void test_generator_successors_values_mode() {
     }
     CHECK(meta_rows == 6);
     CHECK(requested_s_values == std::set<int>({1, 2, 5}));
+    std::ifstream per_mode_meta(out_dir + "/graph_metadata_s1_2_5.csv");
+    CHECK(static_cast<bool>(per_mode_meta));
     CHECK(std::system(cleanup.c_str()) == 0);
+}
+
+void test_generator_rejects_duplicate_sizes_and_successor_values() {
+    const std::string out_dir = "/tmp/rsp_generator_duplicate_params";
+    const std::string cleanup = "rm -rf " + out_dir;
+    CHECK(std::system(cleanup.c_str()) == 0);
+
+    const std::string dup_sizes_cmd =
+        "python3 experiments/generate_medium_graphs.py --output " + out_dir +
+        " --sizes 20 20 --cases 1 --actions 3 --successors 2 --seed 42";
+    const std::string dup_s_values_cmd =
+        "python3 experiments/generate_medium_graphs.py --output " + out_dir +
+        " --sizes 20 --cases 1 --actions 3 --successors-values 1 1 2 --seed 42";
+
+    CHECK(std::system(dup_sizes_cmd.c_str()) != 0);
+    CHECK(std::system(dup_s_values_cmd.c_str()) != 0);
+    CHECK(std::system(cleanup.c_str()) == 0);
+}
+
+void test_rsp_main_rejects_trailing_cli_garbage() {
+    const std::string out_dir = "/tmp/rsp_main_trailing_garbage_out";
+    const std::string err_path = "/tmp/rsp_main_trailing_garbage.err";
+    const std::string cmd =
+        shell_quote(std::string(RSP_MAIN_BIN)) +
+        " --input data/toy_graph.txt --algorithm vi "
+        "--output " + out_dir + " --max-iter 10abc "
+        "2> " + shell_quote(err_path);
+    CHECK(std::system(cmd.c_str()) != 0);
+    CHECK(read_text_file(err_path).find("invalid integer for --max-iter") != std::string::npos);
+    CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
+    std::remove(err_path.c_str());
 }
 
 void test_run_robustness_rejects_mixed_input_dir_with_override_s() {

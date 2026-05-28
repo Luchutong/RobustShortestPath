@@ -10,6 +10,24 @@
 
 namespace {
 
+int parse_int_strict(const std::string& text, const std::string& name) {
+    std::size_t pos = 0;
+    int value = std::stoi(text, &pos);
+    if (pos != text.size()) {
+        throw std::invalid_argument("invalid integer for " + name + ": " + text);
+    }
+    return value;
+}
+
+double parse_double_strict(const std::string& text, const std::string& name) {
+    std::size_t pos = 0;
+    double value = std::stod(text, &pos);
+    if (pos != text.size()) {
+        throw std::invalid_argument("invalid double for " + name + ": " + text);
+    }
+    return value;
+}
+
 struct Args {
     std::string input;
     std::string algorithm = "vi";
@@ -37,9 +55,9 @@ Args parse_args(int argc, char** argv) {
         } else if (key == "--output") {
             args.output = require_value(key);
         } else if (key == "--max-iter") {
-            args.max_iter = std::stoi(require_value(key));
+            args.max_iter = parse_int_strict(require_value(key), key);
         } else if (key == "--epsilon") {
-            args.epsilon = std::stod(require_value(key));
+            args.epsilon = parse_double_strict(require_value(key), key);
         } else if (key == "--zero-init") {
             args.init_with_inf = false;
         } else if (key == "--help") {

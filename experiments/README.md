@@ -77,6 +77,14 @@ n,requested_s,actions,algorithm,cases,success_count,success_rate,avg_runtime_ms,
 graph_id,n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost
 ```
 
+当一次运行生成多个 `requested_s` 时，脚本还会同时写出按本次请求集合命名的 metadata，例如：
+
+```text
+graph_metadata_s1_2_5.csv
+```
+
+并且当前 generator 会拒绝重复的 `--sizes` 或重复的 `--successors-values`，避免图文件与 metadata 行被静默覆盖。
+
 实验 4 当前命令：
 
 ```bash

@@ -131,6 +131,8 @@ def main() -> None:
         raise ValueError("--actions must be positive")
     if args.cases <= 0:
         raise ValueError("--cases must be positive")
+    if len(set(args.sizes)) != len(args.sizes):
+        raise ValueError("--sizes must contain unique values")
     if (
         not math.isfinite(args.min_cost)
         or not math.isfinite(args.max_cost)
@@ -151,6 +153,8 @@ def main() -> None:
     for s in successor_values:
         if s <= 0:
             raise ValueError("successor count must be positive")
+    if len(set(successor_values)) != len(successor_values):
+        raise ValueError("--successors-values must contain unique values")
 
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
@@ -195,8 +199,35 @@ def main() -> None:
                 )
                 generated += 1
 
-    metadata_path = output / "graph_metadata.csv"
+    metadata_suffix = (
+        "_".join(str(s) for s in successor_values)
+        if len(successor_values) > 1
+        else str(successor_values[0])
+    )
+    metadata_path = output / f"graph_metadata_s{metadata_suffix}.csv"
+    combined_metadata_path = output / "graph_metadata.csv"
     with metadata_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "graph_id",
+                "n",
+                "actions",
+                "case",
+                "base_seed",
+                "display_seed",
+                "rng_seed",
+                "requested_s",
+                "min_actual_s",
+                "max_actual_s",
+                "avg_actual_s",
+                "min_cost",
+                "max_cost",
+            ],
+        )
+        writer.writeheader()
+        writer.writerows(metadata_rows)
+    with combined_metadata_path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
             fieldnames=[
@@ -220,6 +251,7 @@ def main() -> None:
 
     print(f"generated {generated} graphs in {output}")
     print(f"wrote metadata to {metadata_path}")
+    print(f"wrote combined metadata to {combined_metadata_path}")
 
 
 if __name__ == "__main__":

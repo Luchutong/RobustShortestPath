@@ -23,12 +23,23 @@ def parse_args() -> argparse.Namespace:
 
 
 def metric_series(rows: list[dict], metric: str) -> tuple[list[int], list[dict]]:
+    if not rows:
+        raise ValueError("no runtime rows available for plotting")
     sizes = sorted({row["n"] for row in rows})
     series = []
     for index, algorithm in enumerate(ALGORITHM_ORDER):
         algorithm_rows = [row for row in rows if row["algorithm"] == algorithm]
         if not algorithm_rows:
             continue
+        seen = set()
+        for row in algorithm_rows:
+            key = (row["n"], row["algorithm"])
+            if key in seen:
+                raise ValueError(
+                    "multiple rows for the same (n, algorithm); "
+                    "use --requested-s and --actions to select one runtime slice"
+                )
+            seen.add(key)
         mapping = {row["n"]: row[metric] for row in algorithm_rows}
         series.append(
             {
@@ -79,6 +90,8 @@ def main() -> None:
         runtime_rows = [r for r in runtime_rows if int(r.get("requested_s", 0)) == args.requested_s]
     if args.actions is not None:
         runtime_rows = [r for r in runtime_rows if int(r.get("actions", 0)) == args.actions]
+    if not runtime_rows:
+        raise ValueError("no rows left after runtime filters")
 
     canvas = SVGCanvas(1200, 860)
     canvas.text(600.0, 32.0, "Runtime and Correctness Comparison", size=24, weight="bold")

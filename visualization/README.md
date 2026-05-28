@@ -60,6 +60,13 @@ python3 visualization/plot_comparison.py \
 	--output report/figures/runtime_comparison.svg
 ```
 
+注意：`plot_comparison.py` 现在会在以下情况下直接报错而不是静默画图：
+
+- runtime 过滤后没有剩余数据；
+- 同一 `(n, algorithm)` 在输入 summary 中出现多条记录；
+
+因此当 summary 同时包含多个 `requested_s` 或 action 配置时，应显式传入 `--requested-s` 和 `--actions` 选定单一切片。
+
 依赖：
 
 - Python 3

@@ -123,6 +123,14 @@ graph_id,n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s
 medium_n20_s5_a3_case0_seed42,20,3,0,42,42,42003942,5,1,5,3.947368,1.0,20.0
 ```
 
+如果一次运行生成多个 `requested_s`，脚本还会额外写出按本次请求集合命名的 metadata 文件，例如：
+
+```text
+graph_metadata_s1_2_5.csv
+```
+
+generator 会拒绝重复的 `--sizes` 与重复的 `--successors-values`，避免图文件或 metadata 被静默覆盖。
+
 `robustness.csv`
 
 ```csv
