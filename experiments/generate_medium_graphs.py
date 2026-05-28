@@ -18,6 +18,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cases", type=int, default=20)
     parser.add_argument("--actions", type=int, default=3)
     parser.add_argument("--successors", type=int, default=2)
+    parser.add_argument("--successors-values", nargs="+", type=int, default=None)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--min-cost", type=float, default=1.0)
     parser.add_argument("--max-cost", type=float, default=20.0)
@@ -127,46 +128,64 @@ def main() -> None:
     args = parse_args()
     if args.actions <= 0:
         raise ValueError("--actions must be positive")
-    if args.successors <= 0:
-        raise ValueError("--successors must be positive")
     if args.min_cost < 0 or args.max_cost < args.min_cost:
         raise ValueError("cost range must be non-negative and ordered")
     for n in args.sizes:
         if n < 3:
             raise ValueError("all graph sizes must be at least 3")
 
+    successor_values: list[int]
+    if args.successors_values is not None:
+        successor_values = list(args.successors_values)
+    else:
+        successor_values = [args.successors]
+
+    for s in successor_values:
+        if s <= 0:
+            raise ValueError("successor count must be positive")
+
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     metadata_rows: list[dict[str, str | int | float]] = []
 
     generated = 0
-    for n in args.sizes:
-        for case in range(args.cases):
-            graph_seed = args.seed + case
-            rng = random.Random(args.seed * 1_000_003 + n * 9_176 + case)
-            path = output / (
-                f"medium_n{n}_s{args.successors}_a{args.actions}_"
-                f"case{case}_seed{graph_seed}.txt"
-            )
-            stats = write_graph(
-                path,
-                n,
-                rng,
-                args.actions,
-                args.successors,
-                args.min_cost,
-                args.max_cost,
-            )
-            metadata_rows.append(
-                {
-                    "graph_id": path.stem,
-                    "requested_s": args.successors,
-                    "min_actual_s": stats["min_actual_s"],
-                    "max_actual_s": stats["max_actual_s"],
-                    "avg_actual_s": round(stats["avg_actual_s"], 6),
-                }
-            )
-            generated += 1
+    for s in successor_values:
+        for n in args.sizes:
+            for case in range(args.cases):
+                graph_seed = args.seed + case
+                rng_seed = args.seed * 1_000_003 + n * 9_176 + case
+                rng = random.Random(rng_seed)
+                path = output / (
+                    f"medium_n{n}_s{s}_a{args.actions}_"
+                    f"case{case}_seed{graph_seed}.txt"
+                )
+                stats = write_graph(
+                    path,
+                    n,
+                    rng,
+                    args.actions,
+                    s,
+                    args.min_cost,
+                    args.max_cost,
+                )
+                metadata_rows.append(
+                    {
+                        "graph_id": path.stem,
+                        "n": n,
+                        "actions": args.actions,
+                        "case": case,
+                        "base_seed": args.seed,
+                        "display_seed": graph_seed,
+                        "rng_seed": rng_seed,
+                        "requested_s": s,
+                        "min_actual_s": stats["min_actual_s"],
+                        "max_actual_s": stats["max_actual_s"],
+                        "avg_actual_s": round(stats["avg_actual_s"], 6),
+                        "min_cost": args.min_cost,
+                        "max_cost": args.max_cost,
+                    }
+                )
+                generated += 1
 
     metadata_path = output / "graph_metadata.csv"
     with metadata_path.open("w", encoding="utf-8", newline="") as handle:
@@ -174,10 +193,18 @@ def main() -> None:
             handle,
             fieldnames=[
                 "graph_id",
+                "n",
+                "actions",
+                "case",
+                "base_seed",
+                "display_seed",
+                "rng_seed",
                 "requested_s",
                 "min_actual_s",
                 "max_actual_s",
                 "avg_actual_s",
+                "min_cost",
+                "max_cost",
             ],
         )
         writer.writeheader()

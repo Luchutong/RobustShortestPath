@@ -384,12 +384,20 @@ void test_generator_writes_metadata_csv() {
         columns.push_back(header.substr(start, comma - start));
         start = comma + 1;
     }
-    CHECK(columns.size() == 5);
+    CHECK(columns.size() == 13);
     CHECK(columns[0] == "graph_id");
-    CHECK(columns[1] == "requested_s");
-    CHECK(columns[2] == "min_actual_s");
-    CHECK(columns[3] == "max_actual_s");
-    CHECK(columns[4] == "avg_actual_s");
+    CHECK(columns[1] == "n");
+    CHECK(columns[2] == "actions");
+    CHECK(columns[3] == "case");
+    CHECK(columns[4] == "base_seed");
+    CHECK(columns[5] == "display_seed");
+    CHECK(columns[6] == "rng_seed");
+    CHECK(columns[7] == "requested_s");
+    CHECK(columns[8] == "min_actual_s");
+    CHECK(columns[9] == "max_actual_s");
+    CHECK(columns[10] == "avg_actual_s");
+    CHECK(columns[11] == "min_cost");
+    CHECK(columns[12] == "max_cost");
 
     std::string row;
     int rows = 0;
@@ -474,7 +482,7 @@ void test_run_robustness_uses_unique_graph_ids_for_recursive_inputs() {
     const std::string out_dir = "/tmp/rsp_robustness_graph_id_out";
     CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
     const std::string cmd =
-        std::string(RSP_RUN_ROBUSTNESS) + " --input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs "
+        shell_quote(std::string(RSP_RUN_ROBUSTNESS)) + " --input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs "
         "--output " + out_dir + " --start 0 --max-steps 50";
     CHECK(std::system(cmd.c_str()) == 0);
 
@@ -495,22 +503,30 @@ void test_run_robustness_uses_unique_graph_ids_for_recursive_inputs() {
 void test_run_robustness_rejects_nonpositive_s() {
     const std::string out_dir = "/tmp/rsp_robustness_bad_s_out";
     const std::string zero_err = "/tmp/rsp_robustness_bad_s_zero.err";
-    const std::string negative_err = "/tmp/rsp_robustness_bad_s_negative.err";
+    const std::string neg_one_err = "/tmp/rsp_robustness_bad_s_neg_one.err";
+    const std::string neg_three_err = "/tmp/rsp_robustness_bad_s_neg_three.err";
     const std::string zero_cmd =
         shell_quote(std::string(RSP_RUN_ROBUSTNESS)) + " --input data/toy_graph.txt "
         "--output " + out_dir + " --start 0 --max-steps 20 --s 0 "
         "2> " + shell_quote(zero_err);
-    const std::string negative_cmd =
+    const std::string neg_one_cmd =
+        shell_quote(std::string(RSP_RUN_ROBUSTNESS)) + " --input data/toy_graph.txt "
+        "--output " + out_dir + " --start 0 --max-steps 20 --s -1 "
+        "2> " + shell_quote(neg_one_err);
+    const std::string neg_three_cmd =
         shell_quote(std::string(RSP_RUN_ROBUSTNESS)) + " --input data/toy_graph.txt "
         "--output " + out_dir + " --start 0 --max-steps 20 --s -3 "
-        "2> " + shell_quote(negative_err);
+        "2> " + shell_quote(neg_three_err);
     CHECK(std::system(zero_cmd.c_str()) != 0);
-    CHECK(std::system(negative_cmd.c_str()) != 0);
+    CHECK(std::system(neg_one_cmd.c_str()) != 0);
+    CHECK(std::system(neg_three_cmd.c_str()) != 0);
     CHECK(read_text_file(zero_err).find("--s must be positive when provided") != std::string::npos);
-    CHECK(read_text_file(negative_err).find("--s must be positive when provided") != std::string::npos);
+    CHECK(read_text_file(neg_one_err).find("--s must be positive when provided") != std::string::npos);
+    CHECK(read_text_file(neg_three_err).find("--s must be positive when provided") != std::string::npos);
     CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
     std::remove(zero_err.c_str());
-    std::remove(negative_err.c_str());
+    std::remove(neg_one_err.c_str());
+    std::remove(neg_three_err.c_str());
 }
 
 void test_run_robustness_uses_distinct_successor_count_for_default_s() {
@@ -524,7 +540,7 @@ void test_run_robustness_uses_distinct_successor_count_for_default_s() {
         "duplicate_successor_graph");
     const std::string out_dir = "/tmp/rsp_distinct_s_out";
     const std::string cmd =
-        std::string(RSP_RUN_ROBUSTNESS) + " --input " + graph_path +
+        shell_quote(std::string(RSP_RUN_ROBUSTNESS)) + " --input " + graph_path +
         " --output " + out_dir + " --start 0 --max-steps 20";
     CHECK(std::system(cmd.c_str()) == 0);
 

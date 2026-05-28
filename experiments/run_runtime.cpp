@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <regex>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -35,6 +36,20 @@ struct RunRow {
     bool converged = false;
     bool success = false;
     double avg_value = rsp::INF;
+};
+
+struct SummaryKey {
+    int n = 0;
+    int requested_s = 0;
+    int total_actions = 0;
+    std::string algorithm;
+
+    bool operator<(const SummaryKey& other) const {
+        if (n != other.n) return n < other.n;
+        if (requested_s != other.requested_s) return requested_s < other.requested_s;
+        if (total_actions != other.total_actions) return total_actions < other.total_actions;
+        return algorithm < other.algorithm;
+    }
 };
 
 struct Summary {
@@ -102,6 +117,20 @@ std::string graph_id_from_path(const std::filesystem::path& path) {
     return path.stem().string();
 }
 
+void parse_graph_params(const std::string& graph_id, int& requested_s, int& actions) {
+    requested_s = 0;
+    actions = 0;
+    std::regex s_re("_s(\\d+)_");
+    std::regex a_re("_a(\\d+)_");
+    std::smatch match;
+    if (std::regex_search(graph_id, match, s_re) && match.size() > 1) {
+        requested_s = std::stoi(match[1].str());
+    }
+    if (std::regex_search(graph_id, match, a_re) && match.size() > 1) {
+        actions = std::stoi(match[1].str());
+    }
+}
+
 double average_value(const rsp::RobustGraph& graph, const std::vector<double>& value) {
     if (static_cast<int>(value.size()) != graph.n) {
         return rsp::INF;
@@ -155,17 +184,16 @@ double safe_average(double sum, int count) {
 
 void write_summary(
     const std::string& path,
-    const std::map<std::pair<int, std::string>, Summary>& summaries
+    const std::map<SummaryKey, Summary>& summaries
 ) {
     std::ofstream out(path);
     if (!out) {
         throw std::runtime_error("failed to open runtime summary csv");
     }
-    out << "n,algorithm,cases,success_count,success_rate,"
+    out << "n,requested_s,actions,algorithm,cases,success_count,success_rate,"
            "avg_runtime_ms,avg_iterations,avg_value\n";
     for (const auto& item : summaries) {
-        const int n = item.first.first;
-        const std::string& algorithm = item.first.second;
+        const SummaryKey& key = item.first;
         const Summary& summary = item.second;
         const double success_rate = summary.cases == 0
             ? 0.0
@@ -176,8 +204,10 @@ void write_summary(
         const double avg_value =
             safe_average(summary.success_value_sum, summary.success_value_count);
 
-        out << n << ','
-            << algorithm << ','
+        out << key.n << ','
+            << key.requested_s << ','
+            << key.total_actions << ','
+            << key.algorithm << ','
             << summary.cases << ','
             << summary.success_count << ','
             << std::fixed << std::setprecision(6) << success_rate << ','
@@ -251,15 +281,23 @@ int main(int argc, char** argv) {
         options.save_history = false;
 
         const std::vector<std::string> algorithms = {"vi", "pi", "dijkstra"};
-        std::map<std::pair<int, std::string>, Summary> summaries;
+        std::map<SummaryKey, Summary> summaries;
 
         for (const auto& file : files) {
             rsp::RobustGraph graph = rsp::read_graph_txt(file.string());
             const std::string graph_id = graph_id_from_path(file);
+            int requested_s = 0;
+            int actions_parsed = 0;
+            parse_graph_params(graph_id, requested_s, actions_parsed);
             for (const auto& algorithm : algorithms) {
                 const RunRow row = run_one_algorithm(graph, graph_id, algorithm, options);
                 write_raw_row(raw, row);
-                update_summary(summaries[{row.n, row.algorithm}], row);
+                SummaryKey key;
+                key.n = row.n;
+                key.requested_s = requested_s;
+                key.total_actions = actions_parsed;
+                key.algorithm = row.algorithm;
+                update_summary(summaries[key], row);
             }
         }
 

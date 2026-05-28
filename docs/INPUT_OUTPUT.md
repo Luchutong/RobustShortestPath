@@ -99,14 +99,14 @@ toy_graph,6,6,7,vi,0.052000,4,1,1,42.600000
 
 ```csv
 graph_id,n,total_actions,total_transitions,algorithm,runtime_ms,iterations,converged,success,avg_value
-medium_n20_seed42,20,57,114,vi,0.120000,8,1,1,50.123456
+medium_n20_s2_a3_case0_seed42,20,57,114,vi,0.120000,8,1,1,50.123456
 ```
 
 `runtime_summary.csv`
 
 ```csv
-n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_value
-20,vi,20,20,1.000000,0.120000,8.000000,50.123456
+n,requested_s,actions,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_value
+20,2,3,vi,20,20,1.000000,0.120000,8.000000,50.123456
 ```
 
 说明：
@@ -117,8 +117,8 @@ n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_v
 `graph_metadata.csv`
 
 ```csv
-graph_id,requested_s,min_actual_s,max_actual_s,avg_actual_s
-medium_n20_s5_a3_case0_seed42,5,1,5,3.947368
+graph_id,n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost
+medium_n20_s5_a3_case0_seed42,20,3,0,42,42,42003942,5,1,5,3.947368,1.0,20.0
 ```
 
 `robustness.csv`

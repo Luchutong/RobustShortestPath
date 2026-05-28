@@ -23,7 +23,8 @@ struct Args {
     std::string output = "results";
     int start = 0;
     int max_steps = 1000;
-    int successor_set_size = -1;
+    int successor_set_size = 0;
+    bool has_successor_set_size = false;
 };
 
 struct RobustnessRow {
@@ -70,6 +71,7 @@ Args parse_args(int argc, char** argv) {
             args.max_steps = std::stoi(require_value(key));
         } else if (key == "--s") {
             args.successor_set_size = std::stoi(require_value(key));
+            args.has_successor_set_size = true;
         } else if (key == "--help") {
             std::cout
                 << "Usage: run_robustness (--input data/toy_graph.txt | "
@@ -86,7 +88,7 @@ Args parse_args(int argc, char** argv) {
     if (args.max_steps < 0) {
         throw std::invalid_argument("--max-steps must be non-negative");
     }
-    if (args.successor_set_size == 0 || args.successor_set_size < -1) {
+    if (args.has_successor_set_size && args.successor_set_size <= 0) {
         throw std::invalid_argument("--s must be positive when provided");
     }
     return args;
@@ -300,7 +302,7 @@ int main(int argc, char** argv) {
     try {
         const Args args = parse_args(argc, argv);
         const auto files = list_graph_files(args);
-        if (!args.input_dir.empty() && args.successor_set_size >= 0) {
+        if (!args.input_dir.empty() && args.has_successor_set_size) {
             throw std::invalid_argument("--s cannot be used together with --input-dir");
         }
         std::filesystem::create_directories(args.output);
@@ -327,7 +329,7 @@ int main(int argc, char** argv) {
             }
 
             const std::string graph_id = graph_id_from_path(file, args.input_dir);
-            const int successor_set_size = args.successor_set_size >= 0
+            const int successor_set_size = args.has_successor_set_size
                 ? args.successor_set_size
                 : max_successor_set_size(graph);
 

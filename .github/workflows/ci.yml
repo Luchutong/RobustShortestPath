@@ -47,6 +47,29 @@ jobs:
             --start 0 \
             --max-steps 20
           test -f /tmp/rsp-ci-robustness/robustness.csv
+      - name: Visualization Smoke Test
+        run: |
+          ./build/rsp_main --input data/toy_graph.txt --algorithm vi --output /tmp/rsp-ci-viz
+          ./build/rsp_main --input data/toy_graph.txt --algorithm pi --output /tmp/rsp-ci-viz
+          ./build/rsp_main --input data/toy_graph.txt --algorithm dijkstra --output /tmp/rsp-ci-viz
+          ./build/rsp_main --input data/toy_graph.txt --algorithm exhaustive --output /tmp/rsp-ci-viz
+          ./build/rsp_main --input data/toy_graph.txt --algorithm baseline_nominal --output /tmp/rsp-ci-viz
+          ./build/run_robustness --input data/toy_graph.txt --output /tmp/rsp-ci-viz --start 0 --max-steps 20
+          python3 visualization/plot_graph.py \
+            --graph-json data/toy_graph.json \
+            --output /tmp/rsp-ci-viz/toy_graph.svg
+          test -f /tmp/rsp-ci-viz/toy_graph.svg
+          python3 visualization/plot_values.py \
+            --values-csv /tmp/rsp-ci-viz/values.csv \
+            --graph-id toy_graph \
+            --algorithms vi,pi,dijkstra,exhaustive \
+            --output /tmp/rsp-ci-viz/toy_values.svg
+          test -f /tmp/rsp-ci-viz/toy_values.svg
+          python3 visualization/plot_comparison.py \
+            --runtime-summary-csv /tmp/rsp-ci-runtime/runtime_summary.csv \
+            --robustness-summary-csv /tmp/rsp-ci-robustness/robustness_summary.csv \
+            --output /tmp/rsp-ci-viz/comparison.svg
+          test -f /tmp/rsp-ci-viz/comparison.svg
 
   sanitizer:
     runs-on: ubuntu-latest

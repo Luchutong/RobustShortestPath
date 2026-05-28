@@ -26,12 +26,22 @@
 实验 3 当前命令：
 
 ```bash
+# 单 successor 值：
 python3 experiments/generate_medium_graphs.py \
   --output data/random_graphs \
   --sizes 20 50 100 200 \
   --cases 20 \
   --actions 3 \
   --successors 2 \
+  --seed 42
+
+# 多 successor 值（一次生成所有 s，避免 metadata 覆盖）：
+python3 experiments/generate_medium_graphs.py \
+  --output data/random_graphs \
+  --sizes 20 \
+  --cases 20 \
+  --actions 3 \
+  --successors-values 1 2 3 4 5 \
   --seed 42
 
 ./build/run_runtime \
@@ -58,13 +68,13 @@ graph_id,n,total_actions,total_transitions,algorithm,runtime_ms,iterations,conve
 `runtime_summary.csv` 字段：
 
 ```csv
-n,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_value
+n,requested_s,actions,algorithm,cases,success_count,success_rate,avg_runtime_ms,avg_iterations,avg_value
 ```
 
 `graph_metadata.csv` 字段：
 
 ```csv
-graph_id,requested_s,min_actual_s,max_actual_s,avg_actual_s
+graph_id,n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost
 ```
 
 实验 4 当前命令：

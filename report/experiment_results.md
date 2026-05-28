@@ -2,7 +2,7 @@
 
 本节汇总 Robust Shortest Path, RSP, 复现实验中的主要图表与结论，覆盖 toy example、实验 3 的中规模效率比较，以及实验 4 的鲁棒性对比。实验所用图像位于 [figures](figures)。如果按本文命令重跑，CSV 会写到项目根目录下的 [results](../results)；仓库中随附的正式实验数据保存在 [experiment_data/official_20260521_210335](../experiment_data/official_20260521_210335)。
 
-需要说明的是：当前生成器的新版本会为新生成的图额外输出 `graph_metadata.csv`，记录 `requested_s,min_actual_s,max_actual_s,avg_actual_s`。仓库内现存的 official archive 来自较早一次正式运行，因此其 `exp4_robustness/results/` 目录中未必包含这份 metadata；该归档的 requested-`s` 分组由 `graphs/s1` 到 `graphs/s5` 的目录结构体现。
+需要说明的是：当前生成器会为新生成的图额外输出 `graph_metadata.csv`，记录 `n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost`。仓库内现存的 official archive 来自较早一次正式运行，因此其 `exp4_robustness/results/` 目录中未必包含这份 metadata；该归档的 requested-`s` 分组由 `graphs/s1` 到 `graphs/s5` 的目录结构体现。
 
 ## 1. 实验总览
 
@@ -99,7 +99,7 @@ toy graph 的核心结论如下：
 
 ## 4. 实验 4：鲁棒性对比
 
-实验 4 固定图规模 `n = 50`，逐步增加请求的 successor 上界 `s = 1, 2, 3, 4, 5`，比较 deterministic baselines 与 robust VI policy 在 adversarial rollout 下的表现。对 layered DAG 生成图而言，靠近 terminal 的 action 可能因为候选后继不足而拥有更小的实际 successor 数量，因此这里的 `s` 应理解为 requested upper bound，而不是每个 action 都精确等于该大小。生成器现在会额外输出 `graph_metadata.csv`，记录 `requested_s,min_actual_s,max_actual_s,avg_actual_s`，用于支撑这一解释。
+实验 4 固定图规模 `n = 50`，逐步增加请求的 successor 上界 `s = 1, 2, 3, 4, 5`，比较 deterministic baselines 与 robust VI policy 在 adversarial rollout 下的表现。对 layered DAG 生成图而言，靠近 terminal 的 action 可能因为候选后继不足而拥有更小的实际 successor 数量，因此这里的 `s` 应理解为 requested upper bound，而不是每个 action 都精确等于该大小。生成器现在会额外输出 `graph_metadata.csv`，记录 `n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost`，用于支撑复现与审计。
 
 正式汇总数据来自 [experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv](../experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv)。关键结果如下：
 
@@ -123,7 +123,7 @@ toy graph 的核心结论如下：
 - deterministic planning 往往在 nominal 情况下过于乐观。
 - robust planning 直接对最坏 successor 负责，因此在 adversarial rollout 下更稳定。
 
-换言之，随着 uncertainty 强度增加，普通 deterministic planning 与鲁棒规划之间的差距会进一步扩大，这也是 RSP 相比普通 shortest path 更适合对抗环境的原因。
+在本实验的随机图生成分布和参数设置下，随着 requested successor upper bound 增大，deterministic baselines 与 robust VI policy 的平均 worst-case cost 差距呈扩大趋势。这说明在该实验族中，RSP policy 比普通 deterministic planning 更能抵抗 adversarial successor selection。
 
 ## 5. 结论
 
