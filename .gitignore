@@ -1,4 +1,4 @@
-build/
+build*/
 cmake-build-*/
 .cache/
 .vscode/
@@ -10,6 +10,8 @@ cmake-build-*/
 *.exe
 *.out
 *.log
+__pycache__/
+*.pyc
 results/*.csv
 results/*.json
 report/figures/*.png

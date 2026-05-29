@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from common import graph_id_from_path, load_graph_json, render_graph_svg, save_svg
+from common import graph_id_from_path, load_graph_json, render_graph_svg, run_cli, save_svg
 
 
 def parse_args() -> argparse.Namespace:
@@ -20,4 +20,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_cli(main)

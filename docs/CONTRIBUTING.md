@@ -33,6 +33,7 @@ ctest --test-dir build --output-on-failure
 ```text
 include/rsp/*.hpp
 src/main.cpp
+src/runner.cpp
 docs/INPUT_OUTPUT.md
 ```
 

@@ -19,19 +19,6 @@ struct DeterministicEdge {
     double cost = 0.0;
 };
 
-bool has_negative_transition_cost(const RobustGraph& graph) {
-    for (const auto& node : graph.nodes) {
-        for (const auto& action : node.actions) {
-            for (const auto& tr : action.trans) {
-                if (tr.cost < -EPS) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
 Transition worst_immediate_successor(const Action& action) {
     Transition chosen = action.trans.front();
     for (const auto& tr : action.trans) {
@@ -99,9 +86,7 @@ BaselineResult deterministic_dijkstra_baseline(
     BaselineResult result;
     result.policy.assign(graph.n, -1);
     result.value.assign(graph.n, INF);
-    if (has_negative_transition_cost(graph)) {
-        return result;
-    }
+    // Negative costs are already rejected by graph.validate() above.
 
     std::vector<std::vector<DeterministicEdge>> incoming(graph.n);
     for (const auto& edge : build_deterministic_edges(graph, mode)) {

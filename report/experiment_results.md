@@ -2,7 +2,7 @@
 
 本节汇总 Robust Shortest Path, RSP, 复现实验中的主要图表与结论，覆盖 toy example、实验 3 的中规模效率比较，以及实验 4 的鲁棒性对比。实验所用图像位于 [figures](figures)。如果按本文命令重跑，CSV 会写到项目根目录下的 [results](../results)；仓库中随附的正式实验数据保存在 [experiment_data/official_20260521_210335](../experiment_data/official_20260521_210335)。
 
-需要说明的是：当前生成器会为新生成的图额外输出 `graph_metadata.csv`，记录 `n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost`。仓库内现存的 official archive 来自较早一次正式运行，因此其 `exp4_robustness/results/` 目录中未必包含这份 metadata；该归档的 requested-`s` 分组由 `graphs/s1` 到 `graphs/s5` 的目录结构体现。
+需要说明的是：当前生成器会为新生成的图额外输出 `graph_metadata.csv`，记录 `graph_id,n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost`。仓库内的 official archive 已使用当前流水线重新生成，因此 `exp3_runtime/graphs/` 与 `exp4_robustness/graphs/` 下都包含这份 metadata，图文件名也采用统一规范 `medium_n{n}_s{s}_a{actions}_case{case}_seed{seed}.txt`，其 requested-`s` 信息既体现在文件名中，也由 `run_runtime` 写入 `runtime_summary.csv` 的 `requested_s` 列。
 
 ## 1. 实验总览
 
@@ -70,32 +70,33 @@ toy graph 的核心结论如下：
 
 ![runtime_comparison](figures/runtime_comparison.svg)
 
-根据 [experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv](../experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv) 中的正式数据，可以整理出如下结果（下表省略了 `requested_s` 与 `actions` 两列；当前 generator 生成的新数据会在 `runtime_summary.csv` 中保留这些分组字段）：
+根据 [experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv](../experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv) 中的正式数据（本批均为 `requested_s=2, actions=3`，下表为可读性省略这两列）可以整理出如下结果：
 
 | n | algorithm | success_rate | avg_runtime_ms | avg_iterations | avg_value |
 | --- | --- | ---: | ---: | ---: | ---: |
-| 20 | vi | 1.000000 | 0.032947 | 4.900000 | 20.651649 |
-| 20 | pi | 1.000000 | 0.190031 | 3.400000 | 20.651649 |
-| 20 | dijkstra | 1.000000 | 0.069289 | 20.000000 | 20.651649 |
-| 50 | vi | 1.000000 | 0.108514 | 7.150000 | 31.243825 |
-| 50 | pi | 1.000000 | 0.439350 | 4.400000 | 31.243825 |
-| 50 | dijkstra | 1.000000 | 0.191933 | 50.000000 | 31.243825 |
-| 100 | vi | 1.000000 | 0.206872 | 7.050000 | 29.470691 |
-| 100 | pi | 1.000000 | 0.924678 | 4.750000 | 29.470691 |
-| 100 | dijkstra | 1.000000 | 0.762531 | 100.000000 | 29.470691 |
-| 200 | vi | 1.000000 | 0.428881 | 7.300000 | 29.716002 |
-| 200 | pi | 1.000000 | 1.914672 | 4.950000 | 29.716002 |
-| 200 | dijkstra | 1.000000 | 2.962888 | 200.000000 | 29.716002 |
+| 20 | vi | 1.000000 | 0.006269 | 4.700000 | 16.172247 |
+| 20 | pi | 1.000000 | 0.019130 | 3.400000 | 16.172247 |
+| 20 | dijkstra | 1.000000 | 0.006253 | 20.000000 | 16.172247 |
+| 50 | vi | 1.000000 | 0.018245 | 7.250000 | 25.341828 |
+| 50 | pi | 1.000000 | 0.077516 | 4.400000 | 25.341828 |
+| 50 | dijkstra | 1.000000 | 0.024146 | 50.000000 | 25.341828 |
+| 100 | vi | 1.000000 | 0.035083 | 7.350000 | 25.947586 |
+| 100 | pi | 1.000000 | 0.163161 | 4.800000 | 25.947586 |
+| 100 | dijkstra | 1.000000 | 0.077618 | 100.000000 | 25.947586 |
+| 200 | vi | 1.000000 | 0.068832 | 7.600000 | 25.350469 |
+| 200 | pi | 1.000000 | 0.336960 | 5.000000 | 25.350469 |
+| 200 | dijkstra | 1.000000 | 0.274981 | 200.000000 | 25.350469 |
 
 从表中可以看出：
 
 - 三个算法在当前 layered DAG 数据上 success rate 全部为 `100%`。
 - 三者的 `avg_value` 完全一致，说明它们最终求得的是同一组 robust optimal values。
-- `vi` 在当前实现和实验规模下具有最小 runtime，表现最稳定。
-- `pi` 的 outer iterations 很少，但每轮都需要进行 policy evaluation 与 properness 检查，因此总时间并不占优。
-- `dijkstra` 的 iterations 等于节点数，因为 naive label-setting 每轮只 finalized 一个节点；在 `n=200` 时，它的 runtime 已明显慢于 `vi` 和 `pi`。
+- `vi` 在 `n >= 50` 上 runtime 明显最小、整体最快且最稳定；在最小规模 `n = 20` 上 `vi`(0.006269) 与 `dijkstra`(0.006253) 处于亚微秒测量噪声内、几乎持平。
+- `pi` 的 outer iterations 最少（约 3~5 轮），但每轮都需要进行 policy evaluation 与 properness 检查，因此总时间并不占优。
+- `dijkstra` 的 iterations 等于节点数，因为 naive label-setting 每轮只 finalized 一个节点；它与 `pi` 的 runtime 接近，二者随 `n` 的相对快慢会因实现常数与机器噪声而互有先后。
+- 全部 runtime 都在亚毫秒量级，规模间差异虽稳定，但 `pi` 与 `dijkstra` 的细微排序对单次测量噪声较敏感。
 
-综合而言，实验 3 表明：在本仓库当前实现条件下，`vi` 是最稳定且最快的中规模求解器；`pi` 在迭代次数上更少，但单轮开销较高；`dijkstra` 的效率则更依赖图结构和具体实现方式。
+综合而言，实验 3 表明：在本仓库当前实现条件下，`vi` 是最稳定且最快的中规模求解器；`pi` 用最少的外层迭代，但单轮开销较高；`dijkstra` 的扫描式 label-setting 迭代数等于节点数，整体与 `pi` 处于同一量级。
 
 ## 4. 实验 4：鲁棒性对比
 
@@ -103,13 +104,15 @@ toy graph 的核心结论如下：
 
 正式汇总数据来自 [experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv](../experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv)。关键结果如下：
 
+表中数字为各 policy 在 adversarial rollout 下的 average worst-case cost（`avg_worst_cost`，只对 `policy_valid=true` 且 `terminated=true` 的样本求平均；本批所有 policy 的 `valid_rate` 与 `terminated_rate` 均为 `1.0`，因此该平均覆盖全部 20 张图）：
+
 | s | baseline_nominal | baseline_bestcase | baseline_worst_immediate | vi |
 | --- | ---: | ---: | ---: | ---: |
-| 1 | 16.914130 | 16.914130 | 16.914130 | 16.914130 |
-| 2 | 57.428797 | 59.333636 | 46.311814 | 40.032566 |
-| 3 | 84.505794 | 86.682949 | 65.758161 | 52.233365 |
-| 4 | 92.016128 | 101.003083 | 93.892031 | 65.491315 |
-| 5 | 111.235759 | 113.197262 | 106.653496 | 76.368103 |
+| 1 | 15.891661 | 15.891661 | 15.891661 | 15.891661 |
+| 2 | 48.044130 | 53.162185 | 42.076035 | 35.661723 |
+| 3 | 73.870759 | 79.942152 | 64.716992 | 48.984977 |
+| 4 | 87.050975 | 90.527246 | 77.985335 | 57.829292 |
+| 5 | 96.753060 | 102.228906 | 99.194495 | 67.982757 |
 
 从实验结果可以得到以下结论：
 
@@ -188,6 +191,8 @@ python3 visualization/plot_toy_steps.py \
 python3 visualization/plot_comparison.py \
   --runtime-summary-csv results/runtime_summary.csv \
   --robustness-summary-csv results/robustness_summary.csv \
+  --requested-s 2 \
+  --actions 3 \
   --output report/figures/runtime_comparison.svg
 ```
 
@@ -197,5 +202,9 @@ python3 visualization/plot_comparison.py \
 python3 visualization/plot_comparison.py \
   --runtime-summary-csv experiment_data/official_20260521_210335/exp3_runtime/results/runtime_summary.csv \
   --robustness-summary-csv experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv \
+  --requested-s 2 \
+  --actions 3 \
   --output report/figures/runtime_comparison.svg
 ```
+
+> 当 `runtime_summary.csv` 中同一 `(n, algorithm)` 出现多个 `requested_s`/`actions` 切片时，`plot_comparison.py` 会要求用 `--requested-s` 与 `--actions` 显式选定一个切片，否则报错退出。本实验 3 数据只含 `requested_s=2, actions=3` 一个切片，但仍建议显式传入以保持命令稳定。

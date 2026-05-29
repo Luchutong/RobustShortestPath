@@ -44,15 +44,16 @@ J_mu(x) = max_{y in Y(x, mu(x))} [g(x, mu(x), y) + J_mu(y)]
 
 若图满足实验中的 properness 条件与非负代价设置，则 Value Iteration 收敛到 Bellman 最优值函数 `J*`。
 
-### 证明思路
+### 证明思路（自上而下单调收敛）
 
-1. Bellman 算子 `T` 定义为逐点取 action 的最小 worst-case value。
-2. 每次迭代 `J_{k+1} = T J_k` 都不会改变 terminal 条件。
-3. 在实验使用的 layered DAG 或存在 proper policy 的图上，`T` 的反复应用逼近其最小不动点。
-4. 极限点必须满足 `J = T J`，即 Bellman 最优性方程。
-5. 最后从 `J*` 抽取 greedy policy，即得 robust optimal policy。
+1. **单调性**：`T` 是单调算子——若逐点有 `J ≤ J'`，则 `TJ ≤ TJ'`。因为内层 `max_{y}[g(x,u,y)+J(y)]` 关于 `J` 保序，外层 `min_u` 也保序。
+2. **初值是上界**：代码默认 `init_with_inf=true`，即 `J_0(x)=+∞`（terminal 为 0）。于是对任何候选值函数都有 `J_0 ≥ J*`，并且 `T J_0 ≤ J_0`（任何一步更新都不会比 `+∞` 更大）。
+3. **单调下降且有下界**：由 `T J_0 ≤ J_0` 与单调性归纳得 `J_{k+1}=T J_k ≤ J_k`，序列逐点单调非增；又因转移代价非负且存在 proper policy，有 `J_k ≥ J* ≥ 0`，序列有下界。
+4. **极限是不动点**：单调非增且有下界的实数序列收敛，记逐点极限为 `J_∞`；对算子取极限得 `J_∞ = T J_∞`，即 `J_∞` 满足 Bellman 最优性方程。
+5. **不动点唯一 = J\***：在 SSP 假设下（存在 proper policy，且每个 improper policy 在某状态的 worst-case 代价为 `+∞`），Bellman 方程在有限值函数类上有唯一不动点，故 `J_∞ = J*`。
+6. **抽取最优策略**：从 `J*` 取 greedy policy（`extract_greedy_policy`）即得 robust optimal policy；该 policy 必为 proper——否则其 worst-case 值为 `+∞`，与 `J*` 在可达状态上有限相矛盾。
 
-注：最终正式报告中可根据课程要求，把这部分写成更严格的单调性、压缩性或 Bertsekas 文献中的命题形式。
+注：以上即 Bertsekas 极小化–极大 SSP 的标准单调收敛论证。实现上 `value_iteration` 用 `init_with_inf` 做自上而下迭代，用 `finite_abs_diff` 计算残差，并对仍为 `+∞` 的不可达节点不纳入收敛判据（`all_values_finite` 另行标记）。
 
 ## 4. Policy Iteration 的停止条件
 

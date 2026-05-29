@@ -80,8 +80,17 @@ std::vector<double> bellman_update(
         if (graph.is_terminal(x)) {
             continue;
         }
-        const int action = greedy_action(graph, x, J);
-        next[x] = action < 0 ? INF : action_value(graph, x, action, J);
+        // Single pass over actions: keep the minimum action value directly so
+        // we do not recompute action_value for the chosen action a second time.
+        double best = INF;
+        const auto& actions = graph.nodes[x].actions;
+        for (int a = 0; a < static_cast<int>(actions.size()); ++a) {
+            const double candidate = action_value(graph, x, a, J);
+            if (less_with_eps(candidate, best)) {
+                best = candidate;
+            }
+        }
+        next[x] = best;
     }
     return next;
 }

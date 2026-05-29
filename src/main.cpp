@@ -64,7 +64,10 @@ Args parse_args(int argc, char** argv) {
             std::cout
                 << "Usage: rsp_main --input data/toy_graph.txt "
                 << "--algorithm vi|pi|dijkstra|exhaustive|baseline_nominal|baseline_bestcase|baseline_worst_immediate "
-                << "--output results\n";
+                << "--output results [--max-iter N] [--epsilon E] [--zero-init]\n"
+                << "  --max-iter   max iterations for vi/pi (default 100000, must be >= 0)\n"
+                << "  --epsilon    convergence threshold for vi (default 1e-9, must be > 0)\n"
+                << "  --zero-init  initialize vi with J=0 instead of +inf\n";
             std::exit(0);
         } else {
             throw std::invalid_argument("unknown argument: " + key);

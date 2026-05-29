@@ -318,27 +318,34 @@ int main(int argc, char** argv) {
         std::map<SummaryKey, Summary> summaries;
 
         for (const auto& file : files) {
-            rsp::RobustGraph graph = rsp::read_graph_txt(file.string());
             const std::string graph_id = graph_id_from_path(file);
-            int requested_s = 0;
-            int actions_parsed = 0;
-            parse_graph_params(graph_id, requested_s, actions_parsed);
-            const int inferred_actions = infer_uniform_actions_per_nonterminal(graph);
-            if (actions_parsed != -1 &&
-                inferred_actions != -1 &&
-                actions_parsed != inferred_actions) {
-                throw std::runtime_error(
-                    "filename actions label does not match graph structure: " + graph_id);
-            }
-            for (const auto& algorithm : algorithms) {
-                const RunRow row = run_one_algorithm(graph, graph_id, algorithm, options);
-                write_raw_row(raw, row);
-                SummaryKey key;
-                key.n = row.n;
-                key.requested_s = requested_s;
-                key.total_actions = actions_parsed;
-                key.algorithm = row.algorithm;
-                update_summary(summaries[key], row);
+            try {
+                rsp::RobustGraph graph = rsp::read_graph_txt(file.string());
+                int requested_s = 0;
+                int actions_parsed = 0;
+                parse_graph_params(graph_id, requested_s, actions_parsed);
+                const int inferred_actions = infer_uniform_actions_per_nonterminal(graph);
+                if (actions_parsed != -1 &&
+                    inferred_actions != -1 &&
+                    actions_parsed != inferred_actions) {
+                    throw std::runtime_error(
+                        "filename actions label does not match graph structure: " + graph_id);
+                }
+                for (const auto& algorithm : algorithms) {
+                    const RunRow row = run_one_algorithm(graph, graph_id, algorithm, options);
+                    write_raw_row(raw, row);
+                    SummaryKey key;
+                    key.n = row.n;
+                    key.requested_s = requested_s;
+                    key.total_actions = actions_parsed;
+                    key.algorithm = row.algorithm;
+                    update_summary(summaries[key], row);
+                }
+            } catch (const std::exception& e) {
+                // One unreadable/invalid graph should not abort the whole batch.
+                std::cerr << "skipping graph: " << file.string()
+                          << " error=" << e.what() << '\n';
+                continue;
             }
         }
 

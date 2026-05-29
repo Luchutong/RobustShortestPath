@@ -26,7 +26,7 @@ H(x, u, J) = max_{y in Y(x, u)} [g(x, u, y) + J(y)]
 J(t) = 0
 ```
 
-在 proper policy 存在且所有 improper policy 代价可区分的前提下，最优值函数 `J*` 满足 Bellman 不动点方程：
+在 SSP 假设下——即存在至少一个 proper policy，且每个 improper policy 在某个状态上的 worst-case 代价为 `+∞`——最优值函数 `J*` 是 Bellman 算子的唯一不动点，满足：
 
 ```text
 J*(x) = min_{u in U(x)} max_{y in Y(x, u)} [g(x, u, y) + J*(y)]

@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import math
 
-from common import PALETTE, SVGCanvas, draw_grouped_bar_chart, load_values, save_svg
+from common import PALETTE, SVGCanvas, draw_grouped_bar_chart, load_values, run_cli, save_svg
 
 
 def parse_args() -> argparse.Namespace:
@@ -22,6 +22,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     algorithms = [item.strip() for item in args.algorithms.split(",") if item.strip()]
+    if not algorithms:
+        raise ValueError("no algorithms requested (--algorithms was empty)")
     series = {algorithm: load_values(args.values_csv, args.graph_id, algorithm) for algorithm in algorithms}
     nodes = sorted({node for values in series.values() for node in values})
     chart_series = [
@@ -45,4 +47,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_cli(main)

@@ -7,16 +7,16 @@
   <line x1="82.00" y1="86.00" x2="82.00" y2="366.00" stroke="#94a3b8" stroke-width="1.40" opacity="1.00" />
   <line x1="82.00" y1="366.00" x2="561.00" y2="366.00" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
   <text x="72.00" y="370.00" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">0.00</text>
-  <line x1="82.00" y1="315.09" x2="561.00" y2="315.09" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="72.00" y="319.09" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">0.59</text>
-  <line x1="82.00" y1="264.18" x2="561.00" y2="264.18" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="72.00" y="268.18" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">1.19</text>
-  <line x1="82.00" y1="213.27" x2="561.00" y2="213.27" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="72.00" y="217.27" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">1.78</text>
-  <line x1="82.00" y1="162.36" x2="561.00" y2="162.36" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="72.00" y="166.36" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">2.37</text>
-  <line x1="82.00" y1="111.45" x2="561.00" y2="111.45" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="72.00" y="115.45" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">2.96</text>
+  <line x1="82.00" y1="347.13" x2="561.00" y2="347.13" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="72.00" y="351.13" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">0.07</text>
+  <line x1="82.00" y1="328.26" x2="561.00" y2="328.26" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="72.00" y="332.26" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">0.13</text>
+  <line x1="82.00" y1="309.39" x2="561.00" y2="309.39" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="72.00" y="313.39" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">0.20</text>
+  <line x1="82.00" y1="290.52" x2="561.00" y2="290.52" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="72.00" y="294.52" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">0.27</text>
+  <line x1="82.00" y1="271.65" x2="561.00" y2="271.65" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
+  <text x="72.00" y="275.65" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">0.34</text>
   <line x1="82.00" y1="366.00" x2="82.00" y2="372.00" stroke="#94a3b8" stroke-width="1.00" opacity="1.00" />
   <text x="82.00" y="388.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">20</text>
   <line x1="161.83" y1="366.00" x2="161.83" y2="372.00" stroke="#94a3b8" stroke-width="1.00" opacity="1.00" />
@@ -25,21 +25,21 @@
   <text x="294.89" y="388.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">100</text>
   <line x1="561.00" y1="366.00" x2="561.00" y2="372.00" stroke="#94a3b8" stroke-width="1.00" opacity="1.00" />
   <text x="561.00" y="388.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">200</text>
-  <polyline points="82.00,363.17 161.83,356.68 294.89,348.23 561.00,329.15" fill="none" stroke="#1f4e5f" stroke-width="3.00" opacity="1.00" />
-  <circle cx="82.00" cy="363.17" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="161.83" cy="356.68" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="294.89" cy="348.23" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="561.00" cy="329.15" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <polyline points="82.00,349.67 161.83,328.25 294.89,286.56 561.00,201.51" fill="none" stroke="#c75b39" stroke-width="3.00" opacity="1.00" />
-  <circle cx="82.00" cy="349.67" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <circle cx="161.83" cy="328.25" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <circle cx="294.89" cy="286.56" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <circle cx="561.00" cy="201.51" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <polyline points="82.00,360.05 161.83,349.51 294.89,300.49 561.00,111.45" fill="none" stroke="#768948" stroke-width="3.00" opacity="1.00" />
-  <circle cx="82.00" cy="360.05" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
-  <circle cx="161.83" cy="349.51" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
-  <circle cx="294.89" cy="300.49" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
-  <circle cx="561.00" cy="111.45" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
+  <polyline points="82.00,364.24 161.83,360.89 294.89,356.18 561.00,346.73" fill="none" stroke="#1f4e5f" stroke-width="3.00" opacity="1.00" />
+  <circle cx="82.00" cy="364.24" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="161.83" cy="360.89" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="294.89" cy="356.18" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="561.00" cy="346.73" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <polyline points="82.00,360.64 161.83,344.30 294.89,320.31 561.00,271.65" fill="none" stroke="#c75b39" stroke-width="3.00" opacity="1.00" />
+  <circle cx="82.00" cy="360.64" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <circle cx="161.83" cy="344.30" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <circle cx="294.89" cy="320.31" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <circle cx="561.00" cy="271.65" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <polyline points="82.00,364.25 161.83,359.24 294.89,344.27 561.00,289.01" fill="none" stroke="#768948" stroke-width="3.00" opacity="1.00" />
+  <circle cx="82.00" cy="364.25" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
+  <circle cx="161.83" cy="359.24" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
+  <circle cx="294.89" cy="344.27" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
+  <circle cx="561.00" cy="289.01" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
   <line x1="451.00" y1="94.00" x2="465.00" y2="94.00" stroke="#1f4e5f" stroke-width="3.00" opacity="1.00" />
   <text x="471.00" y="98.00" text-anchor="start" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">vi</text>
   <line x1="451.00" y1="114.00" x2="465.00" y2="114.00" stroke="#c75b39" stroke-width="3.00" opacity="1.00" />
@@ -71,16 +71,16 @@
   <text x="879.89" y="388.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">100</text>
   <line x1="1146.00" y1="366.00" x2="1146.00" y2="372.00" stroke="#94a3b8" stroke-width="1.00" opacity="1.00" />
   <text x="1146.00" y="388.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">200</text>
-  <polyline points="667.00,359.76 746.83,356.90 879.89,357.03 1146.00,356.71" fill="none" stroke="#1f4e5f" stroke-width="3.00" opacity="1.00" />
-  <circle cx="667.00" cy="359.76" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="746.83" cy="356.90" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="879.89" cy="357.03" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="1146.00" cy="356.71" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <polyline points="667.00,361.67 746.83,360.40 879.89,359.95 1146.00,359.70" fill="none" stroke="#c75b39" stroke-width="3.00" opacity="1.00" />
+  <polyline points="667.00,360.02 746.83,356.77 879.89,356.65 1146.00,356.33" fill="none" stroke="#1f4e5f" stroke-width="3.00" opacity="1.00" />
+  <circle cx="667.00" cy="360.02" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="746.83" cy="356.77" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="879.89" cy="356.65" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="1146.00" cy="356.33" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <polyline points="667.00,361.67 746.83,360.40 879.89,359.89 1146.00,359.64" fill="none" stroke="#c75b39" stroke-width="3.00" opacity="1.00" />
   <circle cx="667.00" cy="361.67" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
   <circle cx="746.83" cy="360.40" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <circle cx="879.89" cy="359.95" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <circle cx="1146.00" cy="359.70" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <circle cx="879.89" cy="359.89" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <circle cx="1146.00" cy="359.64" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
   <polyline points="667.00,340.55 746.83,302.36 879.89,238.73 1146.00,111.45" fill="none" stroke="#768948" stroke-width="3.00" opacity="1.00" />
   <circle cx="667.00" cy="340.55" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
   <circle cx="746.83" cy="302.36" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
@@ -146,15 +146,15 @@
   <line x1="667.00" y1="746.00" x2="1146.00" y2="746.00" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
   <text x="657.00" y="750.00" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">0.0</text>
   <line x1="667.00" y1="695.09" x2="1146.00" y2="695.09" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="657.00" y="699.09" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">22.6</text>
+  <text x="657.00" y="699.09" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">20.4</text>
   <line x1="667.00" y1="644.18" x2="1146.00" y2="644.18" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="657.00" y="648.18" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">45.3</text>
+  <text x="657.00" y="648.18" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">40.9</text>
   <line x1="667.00" y1="593.27" x2="1146.00" y2="593.27" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="657.00" y="597.27" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">67.9</text>
+  <text x="657.00" y="597.27" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">61.3</text>
   <line x1="667.00" y1="542.36" x2="1146.00" y2="542.36" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="657.00" y="546.36" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">90.6</text>
+  <text x="657.00" y="546.36" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">81.8</text>
   <line x1="667.00" y1="491.45" x2="1146.00" y2="491.45" stroke="#e2e8f0" stroke-width="1.00" opacity="0.90" stroke-dasharray="5 5" />
-  <text x="657.00" y="495.45" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">113.2</text>
+  <text x="657.00" y="495.45" text-anchor="end" font-size="10" font-weight="normal" fill="#475569" font-family="DejaVu Sans, Arial, sans-serif">102.2</text>
   <line x1="667.00" y1="746.00" x2="667.00" y2="752.00" stroke="#94a3b8" stroke-width="1.00" opacity="1.00" />
   <text x="667.00" y="768.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">1</text>
   <line x1="786.75" y1="746.00" x2="786.75" y2="752.00" stroke="#94a3b8" stroke-width="1.00" opacity="1.00" />
@@ -165,30 +165,30 @@
   <text x="1026.25" y="768.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">4</text>
   <line x1="1146.00" y1="746.00" x2="1146.00" y2="752.00" stroke="#94a3b8" stroke-width="1.00" opacity="1.00" />
   <text x="1146.00" y="768.00" text-anchor="middle" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">5</text>
-  <polyline points="667.00,707.97 786.75,616.86 906.50,555.97 1026.25,539.08 1146.00,495.87" fill="none" stroke="#1f4e5f" stroke-width="3.00" opacity="1.00" />
-  <circle cx="667.00" cy="707.97" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="786.75" cy="616.86" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="906.50" cy="555.97" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="1026.25" cy="539.08" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <circle cx="1146.00" cy="495.87" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
-  <polyline points="667.00,707.97 786.75,612.58 906.50,551.08 1026.25,518.88 1146.00,491.45" fill="none" stroke="#c75b39" stroke-width="3.00" opacity="1.00" />
-  <circle cx="667.00" cy="707.97" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <circle cx="786.75" cy="612.58" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <circle cx="906.50" cy="551.08" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <circle cx="1026.25" cy="518.88" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <polyline points="667.00,706.43 786.75,626.37 906.50,562.07 1026.25,529.25 1146.00,505.09" fill="none" stroke="#1f4e5f" stroke-width="3.00" opacity="1.00" />
+  <circle cx="667.00" cy="706.43" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="786.75" cy="626.37" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="906.50" cy="562.07" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="1026.25" cy="529.25" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <circle cx="1146.00" cy="505.09" r="4.00" fill="#1f4e5f" stroke="#1f4e5f" stroke-width="1.00" />
+  <polyline points="667.00,706.43 786.75,613.63 906.50,546.95 1026.25,520.59 1146.00,491.45" fill="none" stroke="#c75b39" stroke-width="3.00" opacity="1.00" />
+  <circle cx="667.00" cy="706.43" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <circle cx="786.75" cy="613.63" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <circle cx="906.50" cy="546.95" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
+  <circle cx="1026.25" cy="520.59" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
   <circle cx="1146.00" cy="491.45" r="4.00" fill="#c75b39" stroke="#c75b39" stroke-width="1.00" />
-  <polyline points="667.00,707.97 786.75,641.86 906.50,598.13 1026.25,534.87 1146.00,506.17" fill="none" stroke="#768948" stroke-width="3.00" opacity="1.00" />
-  <circle cx="667.00" cy="707.97" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
-  <circle cx="786.75" cy="641.86" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
-  <circle cx="906.50" cy="598.13" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
-  <circle cx="1026.25" cy="534.87" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
-  <circle cx="1146.00" cy="506.17" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
-  <polyline points="667.00,707.97 786.75,655.98 906.50,628.54 1026.25,598.73 1146.00,574.27" fill="none" stroke="#99627a" stroke-width="3.00" opacity="1.00" />
-  <circle cx="667.00" cy="707.97" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
-  <circle cx="786.75" cy="655.98" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
-  <circle cx="906.50" cy="628.54" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
-  <circle cx="1026.25" cy="598.73" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
-  <circle cx="1146.00" cy="574.27" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
+  <polyline points="667.00,706.43 786.75,641.23 906.50,584.86 1026.25,551.82 1146.00,499.01" fill="none" stroke="#768948" stroke-width="3.00" opacity="1.00" />
+  <circle cx="667.00" cy="706.43" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
+  <circle cx="786.75" cy="641.23" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
+  <circle cx="906.50" cy="584.86" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
+  <circle cx="1026.25" cy="551.82" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
+  <circle cx="1146.00" cy="499.01" r="4.00" fill="#768948" stroke="#768948" stroke-width="1.00" />
+  <polyline points="667.00,706.43 786.75,657.20 906.50,624.03 1026.25,602.01 1146.00,576.73" fill="none" stroke="#99627a" stroke-width="3.00" opacity="1.00" />
+  <circle cx="667.00" cy="706.43" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
+  <circle cx="786.75" cy="657.20" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
+  <circle cx="906.50" cy="624.03" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
+  <circle cx="1026.25" cy="602.01" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
+  <circle cx="1146.00" cy="576.73" r="4.00" fill="#99627a" stroke="#99627a" stroke-width="1.00" />
   <line x1="1036.00" y1="474.00" x2="1050.00" y2="474.00" stroke="#1f4e5f" stroke-width="3.00" opacity="1.00" />
   <text x="1056.00" y="478.00" text-anchor="start" font-size="10" font-weight="normal" fill="#22313f" font-family="DejaVu Sans, Arial, sans-serif">baseline_nominal</text>
   <line x1="1036.00" y1="494.00" x2="1050.00" y2="494.00" stroke="#c75b39" stroke-width="3.00" opacity="1.00" />

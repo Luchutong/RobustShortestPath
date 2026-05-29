@@ -176,6 +176,21 @@ void test_runner_vi_rejects_no_proper_policy_graph() {
     CHECK(!run.success);
 }
 
+void test_runner_pi_rejects_no_proper_policy_graph() {
+    const rsp::RobustGraph graph = make_no_proper_policy_graph();
+    rsp::AlgorithmOptions options;
+    options.max_iter = 20;
+    options.epsilon = 1e-9;
+    options.init_with_inf = true;
+    options.save_history = false;
+
+    // Policy iteration must fail gracefully (no exception) when no proper
+    // policy exists, mirroring value_iteration's success=false behavior.
+    const auto run = rsp::run_algorithm(graph, "pi", options);
+    CHECK(!run.converged);
+    CHECK(!run.success);
+}
+
 void test_runner_pi_requires_convergence() {
     const rsp::RobustGraph graph = rsp::read_graph_txt("data/toy_graph.txt");
     rsp::AlgorithmOptions options;
@@ -701,6 +716,7 @@ int main() {
     test_value_iteration_reports_not_converged();
     test_runner_vi_success_requires_convergence();
     test_runner_vi_rejects_no_proper_policy_graph();
+    test_runner_pi_rejects_no_proper_policy_graph();
     test_runner_pi_requires_convergence();
     test_policy_iteration_accepts_max_iter_only();
     test_terminal_actions_are_rejected();

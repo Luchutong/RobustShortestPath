@@ -43,7 +43,8 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 - `results/runtime_summary.csv`
 - `results/robustness.csv`
 - `results/robustness_summary.csv`
-- `results/graph_metadata.csv`
+
+此外，随机图生成器 `experiments/generate_medium_graphs.py` 会把 `graph_metadata.csv`（以及按本次 `--successors-values` 命名的 `graph_metadata_s*.csv`）写入它的 `--output` 图目录，而不是 `results/`。
 
 ## 小组分工
 

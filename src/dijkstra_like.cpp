@@ -8,19 +8,6 @@
 namespace rsp {
 namespace {
 
-bool has_negative_transition_cost(const RobustGraph& graph) {
-    for (const auto& node : graph.nodes) {
-        for (const auto& action : node.actions) {
-            for (const auto& tr : action.trans) {
-                if (tr.cost < -EPS) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
 bool better_candidate(double value, int node, int action,
                       double best_value, int best_node, int best_action) {
     if (less_with_eps(value, best_value)) {
@@ -49,11 +36,8 @@ DijkstraLikeResult dijkstra_like(const RobustGraph& graph) {
     result.finalize_order.push_back(graph.terminal);
     result.finalized_count = 1;
 
-    if (has_negative_transition_cost(graph)) {
-        result.success = false;
-        return result;
-    }
-
+    // Negative costs are already rejected by graph.validate() above, so no
+    // extra guard is needed here.
     while (result.finalized_count < graph.n) {
         int best_node = -1;
         int best_action = -1;

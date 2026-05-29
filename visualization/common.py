@@ -4,6 +4,7 @@ import csv
 import html
 import json
 import math
+import sys
 from pathlib import Path
 from typing import Dict, Iterable, List, Sequence, Tuple
 
@@ -29,6 +30,17 @@ def graph_id_from_path(path: str) -> str:
 
 def ensure_parent_dir(path: str) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
+
+
+def run_cli(entry) -> None:
+    """Run a script entry point, turning common input errors into a clean
+    ``error: <message>`` on stderr with a non-zero exit, mirroring the C++
+    command-line tools instead of dumping a raw Python traceback."""
+    try:
+        entry()
+    except (OSError, ValueError, KeyError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(1)
 
 
 def load_graph_json(path: str) -> dict:
@@ -72,7 +84,7 @@ def load_runtime_summary(path: str) -> List[dict]:
         row["n"] = int(row["n"])
         row["cases"] = int(row["cases"])
         row["success_count"] = int(row["success_count"])
-        row["success_rate"] = float(row["success_rate"])
+        row["success_rate"] = parse_float(row["success_rate"])
         row["avg_runtime_ms"] = parse_float(row["avg_runtime_ms"])
         row["avg_iterations"] = parse_float(row["avg_iterations"])
         row["avg_value"] = parse_float(row["avg_value"])
@@ -87,8 +99,7 @@ def load_robustness(path: str, graph_id: str | None = None) -> List[dict]:
             continue
         row["s"] = int(row["s"])
         row["start_node"] = int(row["start_node"])
-        row["policy_valid"] = int(row.get("policy_valid", "1"))
-        row["status"] = row.get("status", row.get("invalid_reason", "ok"))
+        row["policy_valid"] = int(row["policy_valid"])
         row["worst_cost"] = parse_float(row["worst_cost"])
         row["terminated"] = int(row["terminated"])
         row["steps"] = int(row["steps"])
@@ -101,10 +112,10 @@ def load_robustness_summary(path: str) -> List[dict]:
     for row in rows:
         row["s"] = int(row["s"])
         row["cases"] = int(row["cases"])
-        row["valid_count"] = int(row.get("valid_count", row["cases"]))
-        row["valid_rate"] = float(row.get("valid_rate", "1.0"))
+        row["valid_count"] = int(row["valid_count"])
+        row["valid_rate"] = parse_float(row["valid_rate"])
         row["terminated_count"] = int(row["terminated_count"])
-        row["terminated_rate"] = float(row["terminated_rate"])
+        row["terminated_rate"] = parse_float(row["terminated_rate"])
         row["avg_worst_cost"] = parse_float(row["avg_worst_cost"])
         row["avg_steps"] = parse_float(row["avg_steps"])
     return rows

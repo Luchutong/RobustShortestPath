@@ -291,10 +291,10 @@ RobustnessRow run_one_algorithm(
         row.worst_cost = rollout.cost;
         row.terminated = rollout.terminated;
         row.steps = rollout.steps;
+        // A policy that passed invalid_reason_for_run is already valid here; a
+        // proper policy always terminates, so "rollout_timeout" only means
+        // --max-steps was too small, not that the policy became invalid.
         row.status = row.terminated ? "ok" : "rollout_timeout";
-        if (!row.terminated) {
-            row.policy_valid = true;
-        }
     } catch (const std::exception& e) {
         row.status = "algorithm_exception";
         std::cerr << "algorithm failed: graph=" << graph_id
@@ -332,21 +332,29 @@ int main(int argc, char** argv) {
         std::map<std::pair<int, std::string>, Summary> summaries;
 
         for (const auto& file : files) {
-            const rsp::RobustGraph graph = rsp::read_graph_txt(file.string());
-            if (args.start < 0 || args.start >= graph.n) {
-                throw std::invalid_argument("--start is out of range for graph " + file.string());
-            }
-
             const std::string graph_id = graph_id_from_path(file, args.input_dir);
-            const int successor_set_size = args.has_successor_set_size
-                ? args.successor_set_size
-                : max_successor_set_size(graph);
+            try {
+                const rsp::RobustGraph graph = rsp::read_graph_txt(file.string());
+                if (args.start < 0 || args.start >= graph.n) {
+                    throw std::invalid_argument(
+                        "--start is out of range for graph " + file.string());
+                }
 
-            for (const auto& algorithm : algorithms) {
-                const RobustnessRow row = run_one_algorithm(
-                    graph, graph_id, successor_set_size, algorithm, args.start, args.max_steps);
-                write_raw_row(raw, row);
-                update_summary(summaries[{row.successor_set_size, row.policy_type}], row);
+                const int successor_set_size = args.has_successor_set_size
+                    ? args.successor_set_size
+                    : max_successor_set_size(graph);
+
+                for (const auto& algorithm : algorithms) {
+                    const RobustnessRow row = run_one_algorithm(
+                        graph, graph_id, successor_set_size, algorithm, args.start, args.max_steps);
+                    write_raw_row(raw, row);
+                    update_summary(summaries[{row.successor_set_size, row.policy_type}], row);
+                }
+            } catch (const std::exception& e) {
+                // One unreadable/invalid graph should not abort the whole batch.
+                std::cerr << "skipping graph: " << file.string()
+                          << " error=" << e.what() << '\n';
+                continue;
             }
         }
 

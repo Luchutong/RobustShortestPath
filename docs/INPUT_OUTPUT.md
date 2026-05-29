@@ -120,8 +120,10 @@ n,requested_s,actions,algorithm,cases,success_count,success_rate,avg_runtime_ms,
 
 ```csv
 graph_id,n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost
-medium_n20_s5_a3_case0_seed42,20,3,0,42,42,42003942,5,1,5,3.947368,1.0,20.0
+medium_n20_s5_a3_case0_seed42,20,3,0,42,42,42183911,5,1,5,3.947368,1.0,20.0
 ```
+
+其中 `rng_seed = base_seed * 1_000_003 + n * 9_176 + requested_s * 53 + case`（含 `requested_s`，确保同一 `(n, case)` 下不同 `s` 的图来自独立随机流）；上表 `min/max/avg_actual_s` 等为示意值。
 
 如果一次运行生成多个 `requested_s`，脚本还会额外写出按本次请求集合命名的 metadata 文件，例如：
 
@@ -170,6 +172,16 @@ python3 experiments/generate_medium_graphs.py --output data/random_graphs
 ./build/run_runtime --input-dir data/random_graphs --output results
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
 ./build/run_robustness --input-dir experiment_data/official_20260521_210335/exp4_robustness/graphs --output results --start 0 --max-steps 1000
+```
+
+`rsp_main` 可选参数：
+
+```bash
+--algorithm vi|pi|dijkstra|exhaustive|baseline_nominal|baseline_bestcase|baseline_worst_immediate  # 默认 vi
+--output results
+--max-iter 100000   # 仅对 vi / pi 生效，必须非负
+--epsilon 1e-9      # 仅对 vi 生效，必须为正且 finite
+--zero-init         # 可选：VI 从 J=0（而非默认的 +inf）初始化，便于观察从下方收敛的残差曲线
 ```
 
 `run_runtime` 可选参数：

@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import math
 
-from common import load_graph_json, load_policy, load_robustness, load_values, render_graph_svg, save_svg
+from common import load_graph_json, load_policy, load_robustness, load_values, render_graph_svg, run_cli, save_svg
 
 
 def parse_args() -> argparse.Namespace:
@@ -140,4 +140,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_cli(main)

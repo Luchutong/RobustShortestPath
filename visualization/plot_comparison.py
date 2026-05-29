@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import math
 
-from common import PALETTE, SVGCanvas, draw_grouped_bar_chart, draw_line_chart, load_robustness, load_robustness_summary, load_runtime_summary, save_svg
+from common import PALETTE, SVGCanvas, draw_grouped_bar_chart, draw_line_chart, load_robustness, load_robustness_summary, load_runtime_summary, run_cli, save_svg
 
 
 ALGORITHM_ORDER = ["vi", "pi", "dijkstra"]
@@ -145,4 +145,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_cli(main)

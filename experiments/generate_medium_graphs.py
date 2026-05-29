@@ -165,7 +165,11 @@ def main() -> None:
         for n in args.sizes:
             for case in range(args.cases):
                 graph_seed = args.seed + case
-                rng_seed = args.seed * 1_000_003 + n * 9_176 + case
+                # Fold `s` into the seed so that, within one --successors-values
+                # run, the s=1/s=2/... graphs for the same (n, case) draw from
+                # independent random streams (otherwise they share a common
+                # prefix and cross-s samples become correlated).
+                rng_seed = args.seed * 1_000_003 + n * 9_176 + s * 53 + case
                 rng = random.Random(rng_seed)
                 path = output / (
                     f"medium_n{n}_s{s}_a{args.actions}_"

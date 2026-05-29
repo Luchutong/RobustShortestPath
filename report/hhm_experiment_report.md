@@ -34,7 +34,7 @@ candidate(x,u) = max_{y in Y(x,u)} [g(x,u,y) + J(y)]
 
 本次补充了两个重要工程约束：
 
-- Dijkstra-like 只适用于非负转移代价；发现负代价时直接返回 `success=false`；
+- Dijkstra-like 只适用于非负转移代价；负代价会在 `graph.validate()` 阶段被拒绝（抛 `invalid_argument`），不会进入求解流程；
 - candidate 值相同时，固定按较小 node id、再按较小 action index 进行 tie-breaking，保证结果可复现。
 
 ### 2.2 Deterministic Dijkstra Baselines
@@ -152,7 +152,7 @@ toy_graph,2,vi,0,1,ok,7.000000,1,2
 
 1. toy graph 中 Dijkstra-like 返回 `J(0)=7`，且节点 0 选择 safe action；
 2. Dijkstra-like 对无法继续 finalized 的图返回 `success=false`；
-3. Dijkstra-like 对负代价图返回 `success=false`，明确其适用条件；
+3. 负代价图被 `graph.validate()` 与 deterministic baseline 以 `invalid_argument` 拒绝，明确非负代价适用条件；
 4. 三种 deterministic baseline 在 toy graph 上选择 `fast_risky`；
 5. nominal baseline 的 adversarial rollout cost 为 `102`，robust VI policy 的 adversarial rollout cost 为 `7`；
 6. 构造一个反例，验证 baseline 不是 immediate-cost 贪心，而是真正按完整 deterministic shortest-path distance 做规划。

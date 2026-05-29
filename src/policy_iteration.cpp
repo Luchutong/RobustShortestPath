@@ -18,7 +18,16 @@ PolicyIterationResult policy_iteration(
 
     ProperPolicyResult init = find_initial_proper_policy(graph);
     if (!init.exists) {
-        throw std::runtime_error("no initial proper policy exists");
+        // No proper policy exists for this graph (some state cannot reach the
+        // terminal against the worst-case successor). Fail gracefully and
+        // consistently with value_iteration / dijkstra_like instead of
+        // throwing, so batch experiments can record success=false and move on.
+        result.value.assign(graph.n, INF);
+        result.value[graph.terminal] = 0.0;
+        result.policy = init.policy;
+        result.converged = false;
+        result.final_policy_proper = false;
+        return result;
     }
 
     result.policy = init.policy;
@@ -69,9 +78,14 @@ PolicyIterationResult policy_iteration(
 
         PolicyCheckResult check = check_policy_proper(graph, next_policy);
         if (!check.proper) {
+            // For a robust SSP, strictly-improving policy iteration over a
+            // proper policy is guaranteed to stay proper, so reaching here
+            // would signal a numerical edge case. Fail gracefully (report the
+            // last proper evaluation and converged=false) rather than throwing.
             result.value = J;
+            result.converged = false;
             result.final_policy_proper = false;
-            throw std::runtime_error("policy improvement produced an improper policy");
+            return result;
         }
         result.policy = std::move(next_policy);
     }
