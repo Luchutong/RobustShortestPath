@@ -514,7 +514,7 @@ void test_toy_json_matches_txt() {
     const rsp::RobustGraph graph = rsp::read_graph_txt("data/toy_graph.txt");
     std::ifstream in("data/toy_graph.json");
     CHECK(static_cast<bool>(in));
-    std::string json(
+    const std::string json = std::string(
         std::istreambuf_iterator<char>(in),
         std::istreambuf_iterator<char>());
     CHECK(json.find("\"n\": 6") != std::string::npos);
@@ -713,6 +713,11 @@ int main() {
     test_generator_avoids_duplicate_successors();
     test_generator_writes_metadata_csv();
     test_generator_successors_values_mode();
+    test_generator_rejects_duplicate_sizes_and_successor_values();
+    test_plot_comparison_rejects_missing_robustness_rows();
+    test_plot_comparison_rejects_ambiguous_runtime_summary();
+    test_toy_json_matches_txt();
+    test_rsp_main_rejects_trailing_cli_garbage();
     test_run_robustness_rejects_mixed_input_dir_with_override_s();
     test_run_robustness_rejects_negative_max_steps();
     test_run_runtime_rejects_nonpositive_epsilon();
