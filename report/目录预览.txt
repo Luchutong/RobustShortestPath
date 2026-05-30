@@ -1,0 +1,88 @@
+鲁棒最短路径(RSP)算法复现实验报告 — 目录预览(部/章两级)
+
+■ 第一部分　引言与背景
+    · 第 1 章　绪论
+    · 第 2 章　文献综述
+
+■ 第二部分　论文解读与理论
+    · 第 3 章　鲁棒最短路问题建模
+    · 第 4 章　Minimax 形式与 Bellman 方程
+    · 第 5 章　半压缩动态规划理论
+    · 第 6 章　RSP 的半压缩分析与主结果
+    · 第 6 章补充一　RSP 与经典/随机最短路的对比
+    · 第 6 章补充二　三个核心算法的逐行完整证明
+    · 第二部分小结(承接第三部分"算法")
+
+■ 第三部分　算法
+    · 第 7 章　值迭代(Value Iteration, VI)
+    · 第 8 章　策略迭代(Policy Iteration, PI)
+    · 第 9 章　Dijkstra-like 算法
+    · 第 10 章　Rollout 近似求解
+    · 第三部分小结
+
+■ 第四部分　复现实现 / 源码精讲
+    · 第 11 章　系统架构与工程体系
+    · 第 12 章　核心数据结构与数值工具
+    · 第 13 章　Bellman 算子(`src/bellman.cpp`)
+    · 第 14 章　Proper Policy(`src/proper_policy.cpp`)
+    · 第 15 章　值迭代实现(`src/value_iteration.cpp`)
+    · 第 16 章　策略迭代实现(`src/policy_iteration.cpp`)
+    · 第 17 章　Dijkstra-like 实现(`src/dijkstra_like.cpp`)
+    · 第 18 章　Baseline、Exhaustive 与 Rollout
+    · 第 19 章　IO、Runner 与 CLI
+    · 第四部分小结
+
+■ 第五部分　数据集构造
+    · 第 20 章　数据格式与 Toy 图
+    · 第 21 章　中规模随机图生成器(`experiments/generate_medium_graphs.py`)
+    · 第 22 章　陷阱图族(`experiments/generate_trap_graphs.py`)
+    · 第五部分小结
+
+■ 第六部分　实验与结果分析
+    · 第 23 章　实验设置与指标
+    · 第 24 章　实验 1:Toy Example
+    · 第 25 章　实验 3:中规模效率比较
+    · 第 26 章　实验 4:鲁棒性对比
+    · 第 27 章　实验 4b:baseline 失效、配对统计与多种子稳定性
+    · 第 28 章　复现保真度与正确性验证
+    · 第六部分小结
+
+■ 第七部分　优化与改进
+    · 第 29 章　算法层面优化
+    · 第 30 章　工程层面优化(本次复现已落实)
+    · 第 31 章　方法学层面优化
+    · 第 32 章　理论延伸(论文 §6)
+    · 第七部分小结
+
+■ 第八部分　结论
+    · 第 33 章　总结
+    · 第 34 章　不足与展望
+
+■ 附录
+    · 附录 A　论文公式 ↔ 项目代码 对照表
+    · 附录 B　关键源码清单(接口签名)
+    · 附录 C　完整实验数据表
+    · 附录 D　复现命令与环境
+    · 参考文献(选)
+
+■ 附录 E　待生成图片 Prompt
+    · 图 3-1　improper 策略与 proper 策略诱导弧子图 A_μ 的对照(对照论文 Fig 1)
+    · 图 5-1　T_μ 不动点迭代的一维 cobweb 示意:R(X)-regular(收敛)对 R(X)-irregular(发散到 +∞)
+    · 图 6-1　陷阱 gadget(节点 0=u、1=v、终点 2=t),展示名义捷径在对抗下成正环失效
+    · 图 7-1　对照论文 Fig 4:4 节点 RSP 例子上 all-nodes 与 one-node(Gauss-Seidel)值迭代的逐轮收敛对比
+    · 图 9-1　对照论文 Fig 5:5 节点例子上 Dijkstra-like 标号逐轮永久化的收敛过程
+    · 图 25-2　VI 残差收敛曲线(对数纵轴,inf-init vs zero-init)
+
+■ 附录 F　核心源码完整清单
+    · F.1　`include/rsp/utils.hpp`
+    · F.2　`include/rsp/graph.hpp`
+    · F.3　`src/bellman.cpp`
+    · F.4　`src/proper_policy.cpp`
+    · F.5　`src/value_iteration.cpp`
+    · F.6　`src/policy_iteration.cpp`
+    · F.7　`src/dijkstra_like.cpp`
+    · F.8　`src/exhaustive_search.cpp`
+    · F.9　`src/baseline.cpp`
+
+■ 图表清单
+    · 图清单
