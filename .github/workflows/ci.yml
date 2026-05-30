@@ -9,9 +9,11 @@ env:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest]
         build_type: [Debug, Release]
     steps:
       - uses: actions/checkout@v6
@@ -54,7 +56,10 @@ jobs:
           ./build/rsp_main --input data/toy_graph.txt --algorithm dijkstra --output /tmp/rsp-ci-viz
           ./build/rsp_main --input data/toy_graph.txt --algorithm exhaustive --output /tmp/rsp-ci-viz
           ./build/rsp_main --input data/toy_graph.txt --algorithm baseline_nominal --output /tmp/rsp-ci-viz
+          grep -q '^toy_graph,vi,0,7.000000$' /tmp/rsp-ci-viz/values.csv
+          grep -q '^toy_graph,baseline_nominal,0,102.000000$' /tmp/rsp-ci-viz/values.csv
           ./build/run_robustness --input data/toy_graph.txt --output /tmp/rsp-ci-viz --start 0 --max-steps 20
+          grep -q '^toy_graph,2,vi,0,1,ok,7.000000,1,2$' /tmp/rsp-ci-viz/robustness.csv
           python3 visualization/plot_graph.py \
             --graph-json data/toy_graph.json \
             --output /tmp/rsp-ci-viz/toy_graph.svg
@@ -79,6 +84,17 @@ jobs:
       - uses: actions/checkout@v6
       - name: Configure
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DRSP_ENABLE_SANITIZERS=ON
+      - name: Build
+        run: cmake --build build -j
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  strict-warnings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Configure (warnings as errors)
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DRSP_WERROR=ON
       - name: Build
         run: cmake --build build -j
       - name: Test

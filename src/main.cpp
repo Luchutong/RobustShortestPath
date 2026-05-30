@@ -102,7 +102,9 @@ int main(int argc, char** argv) {
         options.epsilon = args.epsilon;
         options.max_iter = args.max_iter;
         options.init_with_inf = args.init_with_inf;
-        options.save_history = true;
+        // value_history is not exported anywhere (only residual_history is),
+        // so there is no need to retain the per-iteration value snapshots.
+        options.save_history = false;
         rsp::AlgorithmRunResult result = rsp::run_algorithm(graph, args.algorithm, options);
 
         const auto stop = std::chrono::steady_clock::now();

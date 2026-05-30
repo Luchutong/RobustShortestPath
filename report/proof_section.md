@@ -61,20 +61,44 @@ J_mu(x) = max_{y in Y(x, mu(x))} [g(x, mu(x), y) + J_mu(y)]
 
 若在某一轮 policy improvement 后策略不再变化，则当前策略是一个 Bellman 最优策略。
 
+### 证明思路（含改进、保持 proper 与终止性）
+
+1. **评估**：当前 proper 策略 `mu` 的 evaluation（§2 的 DAG 逆拓扑回代）给出其精确值 `J_mu`。
+2. **单调改进**：improvement 步骤对每个节点取 `argmin_u H(x,u,J_mu)`。代码采用严格改进（`less_with_eps`），仅当新 action 严格更优才替换，因此新策略 `mu'` 满足 `H(x,mu'(x),J_mu) ≤ H(x,mu(x),J_mu) = J_mu(x)`（逐点不增），且至少在一个状态严格下降，于是 `J_{mu'} ≤ J_mu` 且不等式在某状态严格成立。
+3. **保持 proper**：本实现对 `mu'` 显式做 `check_policy_proper`；在 robust SSP 假设下对 proper 策略做严格改进必得 proper 策略（否则其某状态值为 `+∞`，与 `J_{mu'} ≤ J_mu < ∞` 矛盾），代码亦以此为不变量（若意外不满足则优雅返回 `converged=false`）。
+4. **终止性**：proper 策略只有有限多个；每轮要么严格降低某状态的值、要么停止，故不会无限循环，算法在有限轮内收敛。
+5. **停止即最优**：若某轮 improvement 后策略不变，则对每个节点 `mu(x) ∈ argmin_u H(x,u,J_mu)`，即 `J_mu = T J_mu`，`J_mu` 满足 Bellman 最优性方程。
+6. 由 §3 的不动点唯一性（SSP 假设下），`J_mu = J*`，故 `mu` 是 robust optimal policy。
+
+## 5. Dijkstra-like 标号算法正确性
+
+### 命题
+
+在非负转移代价下，Dijkstra-like label-setting 每次永久标号的节点值即为其 robust optimal value，最终（若图 globally proper）得到与 VI 相同的 `J*`。
+
 ### 证明思路
 
-1. 当前策略 `mu` 的 evaluation 已给出其精确值 `J_mu`。
-2. improvement 步骤对每个节点选择 `argmin_u H(x, u, J_mu)`。
-3. 若 improvement 后策略不变，则说明对每个节点都有：
+1. 初始只有 terminal 被永久标号，其值为 `0`。
+2. 一个 action `u` 仅当其**全部** successors 都已永久标号时才成为候选，其候选值为 `H(x,u)=max_{y∈Y(x,u)}[g(x,u,y)+J(y)]`（用已确定的 `J`）。
+3. **关键性质（可永久标号）**：在所有候选中取最小值 `m` 永久标号是安全的。因为代价非负，任何尚未确定的后继 `y'` 的最终值 `J(y')` 都 `≥ m`（它将在之后以更大或相等的候选值被标号）；因此任何使用未确定后继的 action 其值 `≥ 0 + m = m`，不可能小于当前最小候选。故当前最小候选已是该节点的最终（最优）值。
+4. **正确性**：归纳地，每个被永久标号的节点值都等于其 robust optimal value，与 Bellman 最优性方程一致。
+5. **完整性 / 失败语义**：若某轮没有任何节点的某个 action 的全部后继都已标号，则这些节点在对抗语义下无法保证到达 terminal（无 proper 子结构），算法返回 `success=false`——与 VI 的 `all_values_finite=false` 语义一致。
+6. 与 §3 的唯一不动点一致，故 globally proper 图上 Dijkstra-like 与 VI/PI 得到同一组 `J*`（实现中已用 `tie-break` 保证确定性）。
 
-```text
-mu(x) in argmin_u H(x, u, J_mu)
-```
+## 6. Exhaustive Search 作为 ground truth 的正确性
 
-4. 因而 `J_mu` 同时满足策略方程与 Bellman 最优性方程。
-5. 所以 `mu` 是最优策略，`J_mu = J*`。
+### 命题
 
-## 5. Toy Example 结论为什么成立
+在小规模 globally-proper 图上，枚举所有 proper stationary policy 并对每个状态取其值的逐点最小，得到的就是 robust optimal value function `J*`；它是验证 VI/PI/Dijkstra 的 ground-truth oracle。
+
+### 证明思路
+
+1. robust SSP 的最优值函数由**某个单一最优 stationary policy** 同时在所有状态取得（最优策略存在性，见 §3/参考文献）。
+2. 因此 `J*(x) = min_{μ proper} J_μ(x)` 对每个状态成立——这正是 `exhaustive_search` 计算的 `optimal_value_by_state`（对所有 proper policy 的逐点取最小）。
+3. 每个 proper policy 的值由 §2 的 DAG 评估精确得到，故枚举所得逐点最小即 `J*`。
+4. **适用边界**：该等式以"存在 proper policy"为前提。若图含无法到达 terminal 的 trap 节点（非 globally proper），exhaustive 在该状态返回 `INF`，此时应以 VI/Dijkstra 的 per-start 值为准；代码中 exhaustive 仅用于小规模 globally-proper 验证，并设有规模守卫（超过阈值返回 `success=false`，避免指数枚举卡死）。
+
+## 7. Toy Example 结论为什么成立
 
 ### 命题
 
@@ -103,7 +127,7 @@ safe       = 3 + J(3) = 7
 
 这个例子说明：即使某个 action 的某条路径非常短，只要它允许对抗者把系统导向代价极大的分支，就不会是 robust optimal action。
 
-## 6. 实验设计合理性说明
+## 8. 实验设计合理性说明
 
 ### 实验 3
 

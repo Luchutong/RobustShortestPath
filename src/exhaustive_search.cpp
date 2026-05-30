@@ -13,6 +13,29 @@ ExhaustiveSearchResult exhaustive_search(const RobustGraph& graph) {
     result.optimal_value_by_state.assign(graph.n, INF);
     result.best_policy_for_start.assign(graph.n, -1);
 
+    // Exhaustive enumeration is exponential (it tries the product of all
+    // non-terminal action counts) and recurses to depth n. Guard against
+    // unbounded hangs and stack overflow by refusing graphs that are too
+    // large, returning success=false to match the graceful-failure contract
+    // used by value_iteration / dijkstra_like. exhaustive is a small-graph
+    // ground-truth oracle, not a general solver.
+    constexpr long long kMaxPolicies = 5'000'000;
+    constexpr int kMaxNodes = 2000;  // recursion depth == n
+    if (graph.n > kMaxNodes) {
+        return result;  // success stays false
+    }
+    long long policy_count = 1;
+    for (int x = 0; x < graph.n; ++x) {
+        if (graph.is_terminal(x)) {
+            continue;
+        }
+        const long long actions = static_cast<long long>(graph.nodes[x].actions.size());
+        if (actions <= 0 || policy_count > kMaxPolicies / actions) {
+            return result;  // too large -> success=false (no overflow)
+        }
+        policy_count *= actions;
+    }
+
     std::vector<int> current(graph.n, -1);
 
     std::function<void(int)> dfs = [&](int x) {

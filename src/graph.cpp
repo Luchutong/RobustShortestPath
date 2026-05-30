@@ -1,5 +1,7 @@
 #include "rsp/graph.hpp"
 
+#include "rsp/utils.hpp"
+
 #include <cmath>
 
 namespace rsp {
@@ -59,6 +61,20 @@ void RobustGraph::validate() const {
                 }
                 if (tr.cost < 0.0) {
                     throw std::invalid_argument("transition cost must be non-negative");
+                }
+                if (tr.cost >= INF / 2.0) {
+                    throw std::invalid_argument(
+                        "transition cost too large (collides with INF sentinel)");
+                }
+            }
+        }
+        // action_id is the label reported in policies.csv; require it to be
+        // unique within a node so the reported policy is unambiguous.
+        const auto& acts = nodes[x].actions;
+        for (std::size_t i = 0; i < acts.size(); ++i) {
+            for (std::size_t j = i + 1; j < acts.size(); ++j) {
+                if (acts[i].action_id == acts[j].action_id) {
+                    throw std::invalid_argument("duplicate action_id within a node");
                 }
             }
         }

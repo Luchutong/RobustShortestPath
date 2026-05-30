@@ -37,7 +37,9 @@ toy example：
 - 每个节点先写 action 数量。
 - 每个 action 一行：`action_id successor_count to cost to cost ...`.
 - terminal 节点 action 数为 `0`.
-- 所有 transition cost 必须 finite 且非负。
+- 所有 transition cost 必须 finite、非负，且 `< 5e99`（避免与内部 `INF=1e100` 哨兵冲突）。
+- 同一节点内的 `action_id` 必须互不相同（否则 policies.csv 的 action 标签将有歧义）。
+- 读图后若仍有多余 token，会报错（防止损坏或拼接的文件被静默解析成另一张较小的合法图）。
 
 ## JSON 图格式
 
@@ -218,3 +220,5 @@ baseline_nominal
 baseline_bestcase
 baseline_worst_immediate
 ```
+
+`exhaustive` 枚举所有 proper policy，复杂度随各节点 action 数之积指数增长，**仅用于小图正确性验证**；超过内部规模阈值（策略数 > 5e6 或节点数 > 2000）时会直接返回 `success=false` 而不会卡死。中规模及以上请用 `vi`/`pi`/`dijkstra`。

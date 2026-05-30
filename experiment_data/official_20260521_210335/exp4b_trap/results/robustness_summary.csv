@@ -1,0 +1,5 @@
+s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,avg_worst_cost,avg_steps
+2,baseline_bestcase,20,3,0.150000,3,0.150000,2.104528,1.000000
+2,baseline_nominal,20,3,0.150000,3,0.150000,2.104528,1.000000
+2,baseline_worst_immediate,20,10,0.500000,10,0.500000,12.597168,1.000000
+2,vi,20,20,1.000000,20,1.000000,13.923397,1.000000

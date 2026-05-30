@@ -87,3 +87,10 @@
 - `vi` robust policy 在所有 `s >= 2` 的平均 worst-case cost 都最低，体现了鲁棒规划在 adversarial rollout 下的优势。
 - 所有 policy 在这批 layered DAG 图上都能终止，terminated rate 均为 100%；差异主要体现在 worst-case cost 和 steps 上。
 - 由于生成器 `rng_seed` 现已包含 `s`，本批不同 `s` 的图来自独立随机流，跨 `s` 的对比不再共享随机前缀。
+
+## 实验 4b：baseline 失效、配对统计与多种子稳定性
+
+- `exp4b_trap/`：由 `experiments/generate_trap_graphs.py` 生成的陷阱图（n=3 gadget，存在 proper 策略但 nominal 捷径在对抗下成环）。20 张图上 `baseline_nominal`/`baseline_bestcase` 的 `valid_rate=0.15`、`baseline_worst_immediate=0.50`、`vi=1.00`——baseline 在对抗结构图上真正失效，而 robust VI 始终有效。
+- 配对统计：在实验 4 的 100 张图上逐图比较，VI 的 worst-case cost 对每个 baseline 都不劣（**100/100**，0/300 落败）。
+- `exp4_multiseed/seed{123,2024}/`：用 `seed ∈ {42,123,2024}` 重跑实验 4，三个种子下 VI 配对胜率均为 100/100（累计 900/900），worst-case cost 高度稳定（如 `s=5`：VI `66.97 ± 0.75` vs baseline ~93–102）。结论不依赖单一随机种子。
+- 详见 [../../report/experiment_results.md](../../report/experiment_results.md) §4b。

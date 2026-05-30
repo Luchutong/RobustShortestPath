@@ -26,6 +26,25 @@ void ensure_parent_dir(const std::string& path) {
     }
 }
 
+// RFC4180 minimal quoting so a graph_id/algorithm containing a comma, quote, or
+// newline cannot shift CSV columns (the Python loaders use csv.DictReader, which
+// understands the quoting). Comma-free values are returned unchanged.
+std::string csv_field(const std::string& s) {
+    if (s.find_first_of(",\"\n\r") == std::string::npos) {
+        return s;
+    }
+    std::string out = "\"";
+    for (char c : s) {
+        if (c == '"') {
+            out += "\"\"";
+        } else {
+            out += c;
+        }
+    }
+    out += "\"";
+    return out;
+}
+
 }  // namespace
 
 RobustGraph read_graph_txt(const std::string& path) {
@@ -44,6 +63,11 @@ RobustGraph read_graph_txt(const std::string& path) {
     }
     if (graph.terminal < 0 || graph.terminal >= graph.n) {
         throw std::runtime_error("terminal index out of range");
+    }
+    if (graph.n > 10'000'000) {
+        // Guard against a corrupt/typo header triggering a multi-GB allocation
+        // before any block is read. Real RSP graphs in this project are tiny.
+        throw std::runtime_error("node count too large (max 10000000)");
     }
 
     graph.nodes.resize(graph.n);
@@ -82,6 +106,14 @@ RobustGraph read_graph_txt(const std::string& path) {
             }
             graph.nodes[x].actions[a] = std::move(action);
         }
+    }
+
+    // Reject trailing data so a corrupted or accidentally-concatenated file is
+    // not silently parsed as a different (smaller) valid graph.
+    std::string extra;
+    if (in >> extra) {
+        throw std::runtime_error(
+            "unexpected trailing data after " + std::to_string(graph.n) + " node blocks");
     }
 
     graph.validate();
@@ -133,7 +165,8 @@ void append_values_csv(
     if (!out) throw std::runtime_error("failed to open values csv");
     if (header) out << "graph_id,algorithm,node,value\n";
     for (int x = 0; x < static_cast<int>(value.size()); ++x) {
-        out << graph_id << ',' << algorithm << ',' << x << ',' << format_value(value[x]) << '\n';
+        out << csv_field(graph_id) << ',' << csv_field(algorithm) << ',' << x << ','
+            << format_value(value[x]) << '\n';
     }
 }
 
@@ -156,7 +189,7 @@ void append_policies_csv(
             action_index < static_cast<int>(graph.nodes[x].actions.size())) {
             action_id = graph.nodes[x].actions[action_index].action_id;
         }
-        out << graph_id << ',' << algorithm << ',' << x << ','
+        out << csv_field(graph_id) << ',' << csv_field(algorithm) << ',' << x << ','
             << action_index << ',' << action_id << '\n';
     }
 }
@@ -173,7 +206,7 @@ void append_residual_history_csv(
     if (!out) throw std::runtime_error("failed to open residual csv");
     if (header) out << "graph_id,algorithm,iteration,residual\n";
     for (int i = 0; i < static_cast<int>(residual_history.size()); ++i) {
-        out << graph_id << ',' << algorithm << ',' << i + 1 << ','
+        out << csv_field(graph_id) << ',' << csv_field(algorithm) << ',' << i + 1 << ','
             << format_value(residual_history[i]) << '\n';
     }
 }
@@ -208,8 +241,8 @@ void append_runtime_csv(
     }
     const double avg = count == 0 ? INF : sum / count;
 
-    out << graph_id << ',' << graph.n << ',' << graph.total_actions() << ','
-        << graph.total_transitions() << ',' << algorithm << ','
+    out << csv_field(graph_id) << ',' << graph.n << ',' << graph.total_actions() << ','
+        << graph.total_transitions() << ',' << csv_field(algorithm) << ','
         << std::fixed << std::setprecision(6) << runtime_ms << ','
         << iterations << ',' << (converged ? 1 : 0) << ','
         << (success ? 1 : 0) << ',' << format_value(avg) << '\n';

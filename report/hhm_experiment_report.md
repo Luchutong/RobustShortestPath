@@ -113,7 +113,7 @@ J(0) = 7
 
 ## 4. 实验结果
 
-在远程主机 `xueshuoshuo_m25` 上运行：
+在 Linux 主机(g++ / CMake / ctest)上运行：
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"

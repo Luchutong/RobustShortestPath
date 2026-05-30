@@ -241,6 +241,19 @@ void test_rollout_tie_breaks_by_smallest_successor_id() {
     CHECK(rollout.path[2] == 3);
 }
 
+void test_rollout_times_out_on_cyclic_policy() {
+    // make_deadlock_graph has a 0<->1 cycle that never reaches terminal 2.
+    // An adversarial rollout of a policy stuck in that cycle must NOT terminate
+    // -- this is the failure mode Exp4 exists to detect.
+    const rsp::RobustGraph graph = make_deadlock_graph();
+    const std::vector<int> policy = {0, 0, -1};
+    const std::vector<double> value = {0.0, 0.0, 0.0};
+    const auto rollout = rsp::adversarial_rollout(graph, policy, value, 0, 10);
+    CHECK(!rollout.terminated);
+    CHECK(rollout.steps == 10);
+    CHECK(rollout.path.size() == 11);
+}
+
 }  // namespace
 
 int main() {
@@ -253,5 +266,6 @@ int main() {
     test_baseline_plans_over_full_deterministic_distance();
     test_rollout_rejects_mismatched_sizes();
     test_rollout_tie_breaks_by_smallest_successor_id();
+    test_rollout_times_out_on_cyclic_policy();
     return 0;
 }

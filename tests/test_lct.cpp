@@ -3,8 +3,10 @@
 #include "rsp/policy_iteration.hpp"
 #include "rsp/proper_policy.hpp"
 #include "rsp/runner.hpp"
+#include "rsp/utils.hpp"
 #include "rsp/value_iteration.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -12,6 +14,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -707,6 +710,147 @@ void test_run_robustness_uses_distinct_successor_count_for_default_s() {
     CHECK(std::system(("rm -rf " + out_dir).c_str()) == 0);
 }
 
+// Deterministically build a random layered DAG (every edge points to a strictly
+// later node or the terminal), so the graph is acyclic and globally proper by
+// construction -- a valid setting for exhaustive ground-truth comparison.
+rsp::RobustGraph make_random_layered_graph(std::mt19937& rng, int n) {
+    rsp::RobustGraph graph;
+    graph.n = n;
+    graph.terminal = n - 1;
+    graph.nodes.resize(n);
+    for (int i = 0; i < n; ++i) {
+        graph.nodes[i].id = i;
+    }
+    std::uniform_int_distribution<int> num_actions(1, 3);
+    std::uniform_int_distribution<int> num_succ(1, 3);
+    std::uniform_real_distribution<double> cost(1.0, 20.0);
+    for (int x = 0; x < n - 1; ++x) {
+        const int na = num_actions(rng);
+        std::vector<int> candidates;
+        for (int y = x + 1; y < n; ++y) {
+            candidates.push_back(y);
+        }
+        for (int a = 0; a < na; ++a) {
+            rsp::Action action;
+            action.action_id = a;
+            std::vector<int> shuffled = candidates;
+            std::shuffle(shuffled.begin(), shuffled.end(), rng);
+            const int ns = std::min<int>(num_succ(rng), static_cast<int>(shuffled.size()));
+            for (int k = 0; k < ns; ++k) {
+                rsp::Transition tr;
+                tr.to = shuffled[k];
+                tr.cost = std::round(cost(rng) * 1e6) / 1e6;
+                action.trans.push_back(tr);
+            }
+            graph.nodes[x].actions.push_back(action);
+        }
+    }
+    graph.validate();
+    return graph;
+}
+
+rsp::RobustGraph make_oversized_exhaustive_graph() {
+    // 15 non-terminal nodes x 3 actions = 3^15 ~ 14.3M policies, above the
+    // exhaustive_search size guard (5M); every action goes straight to terminal
+    // so VI trivially solves it (J=1 everywhere).
+    rsp::RobustGraph graph;
+    graph.n = 16;
+    graph.terminal = 15;
+    graph.nodes.resize(graph.n);
+    for (int i = 0; i < graph.n; ++i) {
+        graph.nodes[i].id = i;
+    }
+    for (int x = 0; x < 15; ++x) {
+        for (int a = 0; a < 3; ++a) {
+            rsp::Action action;
+            action.action_id = a;
+            action.trans.push_back({15, 1.0});
+            graph.nodes[x].actions.push_back(action);
+        }
+    }
+    graph.validate();
+    return graph;
+}
+
+void test_random_graphs_all_algorithms_agree() {
+    std::mt19937 rng(20260529u);
+    for (int iter = 0; iter < 300; ++iter) {
+        const int n = 3 + static_cast<int>(rng() % 6);  // 3..8 nodes
+        const rsp::RobustGraph graph = make_random_layered_graph(rng, n);
+
+        const auto vi = rsp::value_iteration(graph, 1e-9, 10000, true, false);
+        const auto pi = rsp::policy_iteration(graph, 10000);
+        const auto dij = rsp::dijkstra_like(graph);
+        const auto ex = rsp::exhaustive_search(graph);
+
+        CHECK(vi.converged);
+        CHECK(pi.converged);
+        CHECK(dij.success);
+        CHECK(ex.success);
+        expect_vectors_close(vi.value, ex.optimal_value_by_state);
+        expect_vectors_close(pi.value, ex.optimal_value_by_state);
+        expect_vectors_close(dij.value, ex.optimal_value_by_state);
+
+        // zero-init VI must reach the same fixed point as inf-init VI.
+        const auto vi_zero = rsp::value_iteration(graph, 1e-9, 10000, false, false);
+        CHECK(vi_zero.converged);
+        expect_vectors_close(vi_zero.value, vi.value);
+    }
+}
+
+void test_exhaustive_rejects_no_proper_policy_graph() {
+    const rsp::RobustGraph graph = make_no_proper_policy_graph();
+    const auto ex = rsp::exhaustive_search(graph);
+    CHECK(!ex.success);
+    CHECK(ex.proper_policies == 0);
+    CHECK(rsp::is_inf(ex.optimal_value_by_state[0]));
+    CHECK(rsp::is_inf(ex.optimal_value_by_state[1]));
+}
+
+void test_exhaustive_size_guard_fails_gracefully() {
+    const rsp::RobustGraph graph = make_oversized_exhaustive_graph();
+    const auto ex = rsp::exhaustive_search(graph);  // must return fast, not hang
+    CHECK(!ex.success);
+    const auto vi = rsp::value_iteration(graph, 1e-9, 1000, true, false);
+    CHECK(vi.converged);
+    expect_close(vi.value[0], 1.0);
+}
+
+void test_policy_iteration_improves_over_initial_proper_policy() {
+    const rsp::RobustGraph graph = make_small_layered_graph();
+    const auto pi = rsp::policy_iteration(graph, 100);
+    const auto ex = rsp::exhaustive_search(graph);
+
+    CHECK(pi.converged);
+    CHECK(pi.final_policy_proper);
+    expect_vectors_close(pi.value, ex.optimal_value_by_state);
+    CHECK(pi.policy[0] == 1);             // optimal action != the initial proper one
+    CHECK(pi.outer_iterations >= 2);      // at least one improvement happened
+    bool saw_change = false;
+    for (int changes : pi.policy_change_history) {
+        if (changes > 0) {
+            saw_change = true;
+        }
+    }
+    CHECK(saw_change);
+    CHECK(!pi.policy_change_history.empty());
+    CHECK(pi.policy_change_history.back() == 0);  // converged with a no-change pass
+}
+
+void test_runner_dispatch_values_on_toy() {
+    const rsp::RobustGraph graph = rsp::read_graph_txt("data/toy_graph.txt");
+    const std::vector<double> robust = {7.0, 1.0, 101.0, 4.0, 100.0, 0.0};
+
+    const auto dij = rsp::run_algorithm(graph, "dijkstra");
+    CHECK(dij.success);
+    expect_vectors_close(dij.value, robust);
+
+    const auto nominal = rsp::run_algorithm(graph, "baseline_nominal");
+    CHECK(nominal.success);
+    const std::vector<double> nominal_robust = {102.0, 1.0, 101.0, 4.0, 100.0, 0.0};
+    expect_vectors_close(nominal.value, nominal_robust);
+}
+
 }  // namespace
 
 int main() {
@@ -742,5 +886,10 @@ int main() {
     test_run_robustness_uses_unique_graph_ids_for_recursive_inputs();
     test_run_robustness_rejects_nonpositive_s();
     test_run_robustness_uses_distinct_successor_count_for_default_s();
+    test_random_graphs_all_algorithms_agree();
+    test_exhaustive_rejects_no_proper_policy_graph();
+    test_exhaustive_size_guard_fails_gracefully();
+    test_policy_iteration_improves_over_initial_proper_policy();
+    test_runner_dispatch_values_on_toy();
     return 0;
 }

@@ -14,7 +14,7 @@
 
 - `theory_notes.md`：RSP 问题定义、Bellman 方程与算法关系的理论笔记。
 - `proof_section.md`：proper policy、VI/PI 正确性与实验设计可直接扩写的证明提纲。
-- `experiment_results.md`：整合 toy example、效率实验、鲁棒性对比的总报告骨架。
+- `experiment_results.md`：整合 toy example、效率实验、鲁棒性对比的总报告（含摘要、三实验结果与参考文献）。
 
 推荐流程：
 

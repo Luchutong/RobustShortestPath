@@ -28,7 +28,7 @@ ctest --test-dir build --output-on-failure
 ./build/rsp_main --input data/toy_graph.txt --algorithm pi --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm exhaustive --output results
 ./build/rsp_main --input data/toy_graph.txt --algorithm baseline_nominal --output results
-python3 experiments/generate_medium_graphs.py --output data/random_graphs
+python3 experiments/generate_medium_graphs.py --output data/random_graphs --seed 42
 ./build/run_runtime --input-dir data/random_graphs --output results
 ./build/run_robustness --input data/toy_graph.txt --output results --start 0 --max-steps 20
 ```

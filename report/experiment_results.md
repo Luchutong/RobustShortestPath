@@ -1,5 +1,9 @@
 # 实验结果
 
+## 摘要
+
+本项目复现 Bertsekas 的 Robust Shortest Path（min-max 随机最短路：`J(x)=min_u max_y[g(x,u,y)+J(y)]`），实现并交叉验证了 VI、PI、Dijkstra-like 与 exhaustive 四种求解器（在 toy 图与 ~28 万张随机图上 robust optimal value 完全一致）。三组实验表明：(1) toy 图上鲁棒策略 worst-case cost 为 7、而名义最短策略在对抗后继下达 102；(2) 中规模 layered DAG 上三算法求得同一组最优值，`vi` runtime 最小；(3) 随 successor 不确定性 `s` 增大，robust VI policy 的 adversarial worst-case cost 始终低于三种 deterministic baseline。
+
 本节汇总 Robust Shortest Path, RSP, 复现实验中的主要图表与结论，覆盖 toy example、实验 3 的中规模效率比较，以及实验 4 的鲁棒性对比。实验所用图像位于 [figures](figures)。如果按本文命令重跑，CSV 会写到项目根目录下的 [results](../results)；仓库中随附的正式实验数据保存在 [experiment_data/official_20260521_210335](../experiment_data/official_20260521_210335)。
 
 需要说明的是：当前生成器会为新生成的图额外输出 `graph_metadata.csv`，记录 `graph_id,n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost`。仓库内的 official archive 已使用当前流水线重新生成，因此 `exp3_runtime/graphs/` 与 `exp4_robustness/graphs/` 下都包含这份 metadata，图文件名也采用统一规范 `medium_n{n}_s{s}_a{actions}_case{case}_seed{seed}.txt`，其 requested-`s` 信息既体现在文件名中，也由 `run_runtime` 写入 `runtime_summary.csv` 的 `requested_s` 列。
@@ -19,6 +23,8 @@
 1. 在 toy graph 上检查各核心算法是否得到与手算一致的 robust optimal value，并展示鲁棒策略相对普通 deterministic planning 的优势。
 2. 在中规模 layered DAG 随机图上比较 `vi`、`pi`、`dijkstra` 的运行效率。
 3. 在存在 successor uncertainty 的图上比较 deterministic baselines 与 robust policy 的 adversarial worst-case cost。
+
+> 实验编号沿用课程指导书（实验 1 / 实验 3 / 实验 4）；指导书中的实验 2 不在本仓库（hhm/lct/csy 分工）的范围内，故编号从 1 跳到 3。
 
 ## 2. 实验 1：Toy Example
 
@@ -100,7 +106,7 @@ toy graph 的核心结论如下：
 
 ## 4. 实验 4：鲁棒性对比
 
-实验 4 固定图规模 `n = 50`，逐步增加请求的 successor 上界 `s = 1, 2, 3, 4, 5`，比较 deterministic baselines 与 robust VI policy 在 adversarial rollout 下的表现。对 layered DAG 生成图而言，靠近 terminal 的 action 可能因为候选后继不足而拥有更小的实际 successor 数量，因此这里的 `s` 应理解为 requested upper bound，而不是每个 action 都精确等于该大小。生成器现在会额外输出 `graph_metadata.csv`，记录 `n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost`，用于支撑复现与审计。
+实验 4 固定图规模 `n = 50`，逐步增加请求的 successor 上界 `s = 1, 2, 3, 4, 5`，比较 deterministic baselines 与 robust VI policy 在 adversarial rollout 下的表现。对 layered DAG 生成图而言，靠近 terminal 的 action 可能因为候选后继不足而拥有更小的实际 successor 数量，因此这里的 `s` 应理解为 requested upper bound，而不是每个 action 都精确等于该大小。生成器现在会额外输出 `graph_metadata.csv`，记录 `graph_id,n,actions,case,base_seed,display_seed,rng_seed,requested_s,min_actual_s,max_actual_s,avg_actual_s,min_cost,max_cost`（共 13 列；其中 `display_seed = base_seed + case` 即写入文件名的逐图种子，`rng_seed` 为实际随机流种子），用于支撑复现与审计。
 
 正式汇总数据来自 [experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv](../experiment_data/official_20260521_210335/exp4_robustness/results/robustness_summary.csv)。关键结果如下：
 
@@ -127,6 +133,48 @@ toy graph 的核心结论如下：
 - robust planning 直接对最坏 successor 负责，因此在 adversarial rollout 下更稳定。
 
 在本实验的随机图生成分布和参数设置下，随着 requested successor upper bound 增大，deterministic baselines 与 robust VI policy 的平均 worst-case cost 差距呈扩大趋势。这说明在该实验族中，RSP policy 比普通 deterministic planning 更能抵抗 adversarial successor selection。
+
+## 4b. 实验 4 补充：baseline 失效、配对统计与多种子稳定性
+
+实验 4 的 layered DAG 图族**结构上保证每个 policy 都是 proper** 的（无环、终点必达），因此那里所有 policy 的 `valid_rate=1.0`，baseline 与 VI 的差距只体现在 worst-case cost、而非 baseline 真正"失败"。为更强地论证鲁棒规划的价值，本节补充三项分析。
+
+### (a) 陷阱图族：baseline 真的会 improper
+
+`experiments/generate_trap_graphs.py` 生成一类"陷阱"图（`experiment_data/official_20260521_210335/exp4b_trap/`）：每张图都存在 proper 策略，但其中一个"风险"动作的 *nominal* 后继便宜、看似最优，其 *对抗* 后继却把系统送回前驱形成环。20 张图、`--start 0` rollout 的结果（`exp4b_trap/results/robustness_summary.csv`）：
+
+| policy | valid_rate | terminated_rate | 说明 |
+| --- | ---: | ---: | --- |
+| baseline_nominal | 0.150000 | 0.150000 | 被便宜的 nominal 捷径诱导，对抗下成环 → 多数 improper |
+| baseline_bestcase | 0.150000 | 0.150000 | 同上 |
+| baseline_worst_immediate | 0.500000 | 0.500000 | 较悲观，部分避开陷阱 |
+| vi | **1.000000** | **1.000000** | 始终选 safe 动作，proper 且终止 |
+
+即在对抗结构图上，nominal/best-case baseline **85% 的图上直接失效**（产出 improper 策略，worst-case cost 记为 `inf`），而 robust VI 始终给出有效且有限的策略。这正是实验 4 的 layered DAG 族（人为保证 proper）所掩盖的失败模式。
+
+### (b) 配对（per-graph）统计
+
+仅比较平均值会掩盖逐图差异。对实验 4 的 100 张图逐图比较"VI 的 worst-case cost 是否不劣于该 baseline"：
+
+| 对比 | VI 不劣的图数 |
+| --- | ---: |
+| vi vs baseline_nominal | **100 / 100** |
+| vi vs baseline_bestcase | **100 / 100** |
+| vi vs baseline_worst_immediate | **100 / 100** |
+
+VI 在**每一张图**上都不劣于任何 baseline（0/300 落败），是比"平均更低"强得多的结论（在 s=1 上并列、s≥2 上严格更优）。
+
+### (c) 多种子稳定性
+
+为排除单一随机种子（`seed=42`）的偶然性，用 `seed ∈ {42, 123, 2024}` 各重跑实验 4（结果存于 `exp4_multiseed/`）。三个种子下 VI 的配对胜率均为 100/100（累计 900/900），且 worst-case cost 高度稳定，例如 `s=5`：
+
+| policy | seed42 | seed123 | seed2024 | 均值 ± 标准差 |
+| --- | ---: | ---: | ---: | ---: |
+| vi | 67.98 | 66.73 | 66.18 | **66.97 ± 0.75** |
+| baseline_worst_immediate | 99.19 | 90.24 | 90.32 | 93.25 |
+| baseline_nominal | 96.75 | 101.49 | 97.17 | 98.47 |
+| baseline_bestcase | 102.23 | 99.53 | 102.92 | 101.56 |
+
+VI 的优势在跨种子下稳定存在，结论不依赖于特定随机种子。
 
 ## 5. 结论
 
@@ -208,3 +256,11 @@ python3 visualization/plot_comparison.py \
 ```
 
 > 当 `runtime_summary.csv` 中同一 `(n, algorithm)` 出现多个 `requested_s`/`actions` 切片时，`plot_comparison.py` 会要求用 `--requested-s` 与 `--actions` 显式选定一个切片，否则报错退出。本实验 3 数据只含 `requested_s=2, actions=3` 一个切片，但仍建议显式传入以保持命令稳定。
+
+## 7. 参考文献
+
+本项目复现的 Robust / minimax Shortest Path 及随机最短路（SSP）理论框架来自 Bertsekas 等的工作：
+
+1. D. P. Bertsekas. *Dynamic Programming and Optimal Control*, Vol. I & II. Athena Scientific.（随机/极小化–极大最短路与 SSP 的动态规划框架；本项目的 Bellman 算子 `J(x)=min_u max_y [g(x,u,y)+J(y)]` 即出自此。）
+2. D. P. Bertsekas and J. N. Tsitsiklis. "An Analysis of Stochastic Shortest Path Problems." *Mathematics of Operations Research*, 16(3):580–595, 1991.（proper policy 定义与 SSP 收敛性，对应本项目的 properness 检查与 VI/PI 收敛论证。）
+3. D. P. Bertsekas. *Abstract Dynamic Programming*. Athena Scientific.（极小化–极大/鲁棒 DP 的不动点存在唯一性与单调收敛论证，对应 [proof_section.md](proof_section.md) §3 的自上而下单调收敛证明。）

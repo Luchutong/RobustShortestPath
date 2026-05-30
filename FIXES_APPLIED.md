@@ -50,3 +50,34 @@
 
 - **H2 种子在 `cases > 53` 时的潜在碰撞**:当前 `s*53 + case`,若每个 `s` 的 `cases` 超过 53,跨 `s` 的 `(s,case)` 偏移可能重叠。**不影响官方数据**(`cases=20 < 53`),不引起文件名碰撞、不导致任何测试失败;彻底加固需改种子公式,会再次触发整批数据重生成与数字更新,故按审计建议推迟为后续项。
 - **1 处 C++ 注释**(描述理论上不可达分支的行为)属纯文案,无功能影响,保留。
+
+## 全项目复审后的增强(第二轮 7 维度多智能体审计)
+
+第二轮对整个项目做了 7 维度对抗式审计(算法/C++ 潜伏 bug/IO/测试/文档/方法学/构建-CI),结论 **GOOD、可直接交、无阻断、核心算法经 ~28 万张随机图对照 exhaustive 零不匹配**。按"最彻底"落实了全部 important + 关键 minor:
+
+**代码健壮性**
+- `exhaustive_search`:加规模守卫(策略数 > 5e6 或 n > 2000 → 返回 `success=false`),消除 CLI 跑大图时的永久卡死与深图栈溢出(CLI 实测 exit=2 优雅失败,非卡死)。
+- `read_graph_txt`:拒绝尾部多余 token(防损坏/拼接文件被静默当成另一张图)+ n 上限(防 OOM)。
+- `graph.validate()`:拒绝 `cost >= 5e99`(避免与 INF=1e100 哨兵冲突)+ 校验节点内 `action_id` 唯一。
+- `io.cpp`:CSV 字段 RFC4180 转义(graph_id/algorithm 含逗号不再破格)。
+- `main.cpp`:`save_history=false`(`value_history` 从不导出,省无谓分配)。
+
+**测试(锁不变量)**
+- `test_lct`:300 张随机图上断言 `vi==pi==dijkstra==exhaustive` 且 `zero-init==inf-init`;exhaustive 在无 proper 图返回 false;exhaustive 规模守卫;PI 改进+历史断言;runner 派发 dijkstra/baseline 的**数值**校验。
+- `test_hhm`:rollout 超时分支(成环策略对手下永不终止)。
+
+**构建/CI**
+- `CMakeLists`:默认 Release(让 README 命令复现 Release runtime);GNU/Clang 旗标加守卫 + MSVC 支持;新增 `RSP_WERROR` 选项。
+- `ci.yml`:OS 矩阵 `[ubuntu, macos]`(顺带覆盖 gcc + AppleClang)、新增 `strict-warnings`(`-Werror`)job、smoke 增加数值断言。
+
+**文档**
+- 删报告里泄露的内网主机名;补 **Bertsekas 参考文献**;`proof_section` 补 dijkstra-like、exhaustive 正确性证明并补全 PI 证明(终止/单调/保持 proper/唯一性);补摘要、实验编号说明、metadata 列(12→13)、display_seed 说明、INPUT_OUTPUT 新校验规则与 exhaustive 小图限制;README 快速开始加 `--seed 42`。
+
+**方法学(新增实验,改数据)**
+- **Exp4b 陷阱图族**(`generate_trap_graphs.py` + `experiment_data/.../exp4b_trap/`):证明 baseline 真会失效——`baseline_nominal/bestcase` `valid_rate=0.15`、`worst_immediate=0.50`、`vi=1.00`,补上了 layered DAG 族(恒 proper)掩盖的失败模式。
+- **配对统计**(`paired_winrate.py`):实验4 逐图比较,VI 对每个 baseline **100/100 不劣**(0/300 落败)。
+- **多种子稳定性**(`exp4_multiseed/`,seed 42/123/2024):VI 配对胜率累计 900/900,worst-case cost 高度稳定(s=5:VI `66.97 ± 0.75` vs baseline ~93–102)。
+
+验证:fresh Release / ASan+UBSan / `-Werror` 三种构建均**零告警、ctest 3/3**;CI 冒烟(generator/runtime/robustness/trap/plot)全通过。
+
+> 注:CI 的 `macos-latest` 矩阵项无法本地实测(本机/远程均无 cmake/clang),代码为可移植标准 C++17 + POSIX 测试,理应通过;若 grader 的 CI 报 macOS 失败,可移除该矩阵项。

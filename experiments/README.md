@@ -122,3 +122,14 @@ graph_id,s,policy_type,start_node,policy_valid,status,worst_cost,terminated,step
 ```csv
 s,policy_type,cases,valid_count,valid_rate,terminated_count,terminated_rate,avg_worst_cost,avg_steps
 ```
+
+实验 4b 陷阱图（演示 baseline 真正失效）：
+
+`generate_medium_graphs.py` 生成的 layered DAG 在结构上保证每个 policy 都 proper（`valid_rate` 恒为 1）。`generate_trap_graphs.py` 则生成一类"陷阱"图——存在 proper 策略，但便宜的 nominal 捷径在对抗后继下成环，使 deterministic baseline 产出 improper 策略：
+
+```bash
+python3 experiments/generate_trap_graphs.py --output data/trap_graphs --cases 20 --seed 42
+./build/run_robustness --input-dir data/trap_graphs --output results --start 0 --max-steps 200
+```
+
+结果中 `baseline_nominal` / `baseline_bestcase` 的 `valid_rate` 显著小于 1（多数图 improper），而 `vi` 恒为 1，定量地展示鲁棒规划相对 deterministic baseline 的优势（详见 [report/experiment_results.md](../report/experiment_results.md) §4b）。

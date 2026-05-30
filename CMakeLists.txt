@@ -5,13 +5,29 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Default to an optimized build so the documented quick-start reproduces the
+# reported (Release) runtime numbers. An explicit -DCMAKE_BUILD_TYPE still wins.
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
 option(RSP_ENABLE_SANITIZERS "Enable Address/Undefined sanitizers" OFF)
+option(RSP_WERROR "Treat compiler warnings as errors (CI strict mode)" OFF)
 
-add_compile_options(-Wall -Wextra -Wpedantic)
-
-if (RSP_ENABLE_SANITIZERS)
-    add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
-    add_link_options(-fsanitize=address,undefined)
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    if (RSP_WERROR)
+        add_compile_options(-Werror)
+    endif()
+    if (RSP_ENABLE_SANITIZERS)
+        add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
+        add_link_options(-fsanitize=address,undefined)
+    endif()
+elseif (MSVC)
+    add_compile_options(/W4)
+    if (RSP_WERROR)
+        add_compile_options(/WX)
+    endif()
 endif()
 
 add_library(rsp
