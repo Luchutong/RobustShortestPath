@@ -1,8 +1,8 @@
-# 附录 F　核心源码完整清单
+# 附录 E　核心源码完整清单
 
 > 本附录给出 `red` 分支九个核心源文件的**逐字完整清单**(与正文第四部分「源码精讲」的片段一一对应,此处为完整上下文,便于查证)。每段开头标注文件路径。
 
-## F.1　`include/rsp/utils.hpp`
+## E.1　`include/rsp/utils.hpp`
 
 > 数值工具:INF 哨兵、is_inf/safe_add/finite_abs_diff
 
@@ -47,7 +47,7 @@ inline std::string format_value(double x) {
 }  // namespace rsp
 ```
 
-## F.2　`include/rsp/graph.hpp`
+## E.2　`include/rsp/graph.hpp`
 
 > 核心数据结构:Transition/Action/Node/RobustGraph
 
@@ -95,7 +95,7 @@ public:
 }  // namespace rsp
 ```
 
-## F.3　`src/bellman.cpp`
+## E.3　`src/bellman.cpp`
 
 > Bellman 算子:action_value=H、greedy_action、bellman_update=T J
 
@@ -201,7 +201,7 @@ std::vector<double> bellman_update(
 }  // namespace rsp
 ```
 
-## F.4　`src/proper_policy.cpp`
+## E.4　`src/proper_policy.cpp`
 
 > proper 策略:初始分层、Kahn 判环、DAG 最长路求值
 
@@ -365,7 +365,7 @@ std::vector<double> evaluate_proper_policy_dag(
 }  // namespace rsp
 ```
 
-## F.5　`src/value_iteration.cpp`
+## E.5　`src/value_iteration.cpp`
 
 > 值迭代 VI:T^k J→J*,残差与有限终止
 
@@ -432,7 +432,7 @@ ValueIterationResult value_iteration(
 }  // namespace rsp
 ```
 
-## F.6　`src/policy_iteration.cpp`
+## E.6　`src/policy_iteration.cpp`
 
 > 策略迭代 PI:DAG 求值 + 单调改进 + 优雅失败
 
@@ -540,7 +540,7 @@ PolicyIterationResult policy_iteration(
 }  // namespace rsp
 ```
 
-## F.7　`src/dijkstra_like.cpp`
+## E.7　`src/dijkstra_like.cpp`
 
 > Dijkstra-like:永久标号、N+1 终止
 
@@ -634,7 +634,7 @@ DijkstraLikeResult dijkstra_like(const RobustGraph& graph) {
 }  // namespace rsp
 ```
 
-## F.8　`src/exhaustive_search.cpp`
+## E.8　`src/exhaustive_search.cpp`
 
 > 穷举 ground-truth:枚举 proper 策略逐点取最小(含规模守卫)
 
@@ -721,7 +721,7 @@ ExhaustiveSearchResult exhaustive_search(const RobustGraph& graph) {
 }  // namespace rsp
 ```
 
-## F.9　`src/baseline.cpp`
+## E.9　`src/baseline.cpp`
 
 > 三种 deterministic baseline:nominal/bestcase/worst_immediate
 
